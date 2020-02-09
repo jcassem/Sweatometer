@@ -1,45 +1,30 @@
 import React, { Component } from 'react';
-import { Sweatometer } from './Sweatometer';
 
 export class Home extends Component {
     static displayName = Home.name;
 
     constructor(props) {
         super(props);
-        this.state = {
-            providedWord: '',
-            wordToSoundLike: '',
-            hasSubmitted: false
-        };
-
-        this.handleChange = this.handleChange.bind(this);
-        this.handleSubmit = this.handleSubmit.bind(this);
-    }
-
-    handleChange(event) {
-        this.setState({ providedWord: event.target.value });
-    }
-
-    handleSubmit(event) {
-        this.setState({
-            hasSubmitted: true,
-            wordToSoundLike: this.state.providedWord
-        });
-
-        event.preventDefault();
     }
 
     render() {
         return (
             <div>
-                <form onSubmit={this.handleSubmit}>
-                    <label>
-                        Name:
-                        <input type="text" value={this.state.providedWord} onChange={this.handleChange} />
-                    </label>
-                    <input type="submit" value="Submit" />
-                </form>
-                {this.state.hasSubmitted === true ? <Sweatometer wordToSoundLike={this.state.wordToSoundLike} /> : <div />}
+                <main role="main" class="inner cover">
+                    <h1 class="cover-heading"><i>Sweat</i>: how hard is your pun working?</h1>
+                    <p class="lead">Sweat describes the level of effort a forced combination
+                            of words (like puns) has been worked itself into existance.</p>
+                    <p class="lead">E.g. <i>Wookie Moster</i> (Cookie Monster x Wookie) is GOLD and would
+                            therefore have a low sweat score.</p>
+                    <p class="lead">Whereas <i>Buddha Fett</i> (Boba Fett x Buddha) has a much higher
+                            sweat-level.</p>
+                </main>
+                <div>
+                    <h4>Try out one of our services</h4>
+                    <a type="button" class="btn btn-lg btn-block btn-outline-primary" href="/find">Find similar words</a>
+                    <a type="button" class="btn btn-lg btn-block btn-outline-primary" href="/">Merge multipe words</a>
+                    <a type="button" class="btn btn-lg btn-block btn-outline-primary" href="/">Test your word combination (Sweat test)</a>
+                </div>
             </div>
         );
   }

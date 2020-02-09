@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { Route } from 'react-router';
 import { Layout } from './components/Layout';
 import { Home } from './components/Home';
-import { Sweatometer } from './components/Sweatometer';
+import { Find } from './components/Find';
 
 import './custom.css'
 
@@ -13,7 +13,7 @@ export default class App extends Component {
     return (
       <Layout>
         <Route exact path='/' component={Home} />
-        <Route path='/sweatometer' component={Sweatometer} />
+        <Route path='/find' component={Find} />
       </Layout>
     );
   }
