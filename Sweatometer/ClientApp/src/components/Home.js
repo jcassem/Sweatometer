@@ -7,6 +7,7 @@ export class Home extends Component {
     constructor(props) {
         super(props);
         this.state = {
+            providedWord: '',
             wordToSoundLike: '',
             hasSubmitted: false
         };
@@ -16,13 +17,14 @@ export class Home extends Component {
     }
 
     handleChange(event) {
-        this.setState({ wordToSoundLike: event.target.value });
+        this.setState({ providedWord: event.target.value });
     }
 
     handleSubmit(event) {
-        var newState = this.state;
-        newState.hasSubmitted = true;
-        this.setState(newState);
+        this.setState({
+            hasSubmitted: true,
+            wordToSoundLike: this.state.providedWord
+        });
 
         event.preventDefault();
     }
@@ -30,12 +32,12 @@ export class Home extends Component {
     render() {
         return (
             <div>
-            <form onSubmit={this.handleSubmit}>
-                <label>
-                    Name:
-                    <input type="text" value={this.state.wordToSoundLike} onChange={this.handleChange} />
-                </label>
-                <input type="submit" value="Submit" />
+                <form onSubmit={this.handleSubmit}>
+                    <label>
+                        Name:
+                        <input type="text" value={this.state.providedWord} onChange={this.handleChange} />
+                    </label>
+                    <input type="submit" value="Submit" />
                 </form>
                 {this.state.hasSubmitted === true ? <Sweatometer wordToSoundLike={this.state.wordToSoundLike} /> : <div />}
             </div>

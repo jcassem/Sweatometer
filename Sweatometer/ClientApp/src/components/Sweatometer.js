@@ -5,14 +5,19 @@ export class Sweatometer extends Component {
   constructor(props) {
     super(props);
       this.state = {
+          lastWordUsed: '',
           similarWords: [],
           loading: true
       };
   }
 
     componentDidMount() {
-    this.populateWeatherData();
-  }
+        this.populateSimilarWordData();
+    }
+    
+    componentDidUpdate() {
+        this.populateSimilarWordData();
+    }
 
   static renderSimilarWordsTable(similarWords) {
     return (
@@ -50,9 +55,16 @@ export class Sweatometer extends Component {
     );
   }
 
-  async populateWeatherData() {
-      const response = await fetch('api/wordfinder/' + this.props.wordToSoundLike);
-    const data = await response.json();
-    this.setState({ similarWords: data, loading: false });
+    async populateSimilarWordData() {
+        if (this.props.wordToSoundLike != this.state.lastWordUsed) {
+            const response = await fetch('api/wordfinder/' + this.props.wordToSoundLike);
+            const data = await response.json();
+
+            this.setState({
+                lastWordUsed: this.props.wordToSoundLike,
+                similarWords: data,
+                loading: false
+            });
+        }
   }
 }
