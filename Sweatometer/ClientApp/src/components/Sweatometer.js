@@ -1,18 +1,20 @@
 import React, { Component } from 'react';
 
 export class Sweatometer extends Component {
-  static displayName = Sweatometer.name;
 
   constructor(props) {
     super(props);
-    this.state = { forecasts: [], loading: true };
+      this.state = {
+          similarWords: [],
+          loading: true
+      };
   }
 
-  componentDidMount() {
+    componentDidMount() {
     this.populateWeatherData();
   }
 
-  static renderForecastsTable(similarWords) {
+  static renderSimilarWordsTable(similarWords) {
     return (
       <table className='table table-striped' aria-labelledby="tabelLabel">
         <thead>
@@ -38,20 +40,19 @@ export class Sweatometer extends Component {
   render() {
     let contents = this.state.loading
       ? <p><em>Loading...</em></p>
-      : Sweatometer.renderForecastsTable(this.state.forecasts);
+      : Sweatometer.renderSimilarWordsTable(this.state.similarWords);
 
     return (
-      <div>
-        <h1 id="tabelLabel" >Sweatometer Test</h1>
-        <p>Returns a list of similar sounding words to 'test'.</p>
+        <div>
+            <p>Returns a list of similar sounding words to '{this.props.wordToSoundLike}'.</p>
         {contents}
       </div>
     );
   }
 
   async populateWeatherData() {
-    const response = await fetch('wordfinder');
+      const response = await fetch('api/wordfinder/' + this.props.wordToSoundLike);
     const data = await response.json();
-    this.setState({ forecasts: data, loading: false });
+    this.setState({ similarWords: data, loading: false });
   }
 }

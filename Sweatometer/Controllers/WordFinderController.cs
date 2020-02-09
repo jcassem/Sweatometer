@@ -9,7 +9,7 @@ using Sweatometer.Service;
 namespace Sweatometer
 {
     [ApiController]
-    [Route("[controller]")]
+    [Route("api/[controller]")]
     public class WordFinderController : Controller
     {
         private readonly ILogger<WordFinderController> logger;
@@ -24,12 +24,12 @@ namespace Sweatometer
             this.wordFinderService = wordFinderService;
         }
 
-        [HttpGet]
-        public async Task<IEnumerable<SimilarWord>> Get()
+        [HttpGet("{wordToSoundLike}")]
+        public async Task<IEnumerable<SimilarWord>> Get(string wordToSoundLike)
         {
             logger.LogInformation("Get similar words to...");
 
-            var result = await wordFinderService.GetWordsThatSoundLikeAsync("test");
+            var result = await wordFinderService.GetWordsThatSoundLikeAsync(wordToSoundLike);
 
             return result.ToArray();
         }
