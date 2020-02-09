@@ -12,24 +12,22 @@ export class Sweatometer extends Component {
     this.populateWeatherData();
   }
 
-  static renderForecastsTable(forecasts) {
+  static renderForecastsTable(similarWords) {
     return (
       <table className='table table-striped' aria-labelledby="tabelLabel">
         <thead>
           <tr>
-            <th>Date</th>
-            <th>Temp. (C)</th>
-            <th>Temp. (F)</th>
-            <th>Summary</th>
+            <th>Word</th>
+            <th>Score</th>
+            <th>Number of Syllables</th>
           </tr>
         </thead>
         <tbody>
-          {forecasts.map(forecast =>
-            <tr key={forecast.date}>
-              <td>{forecast.date}</td>
-              <td>{forecast.temperatureC}</td>
-              <td>{forecast.temperatureF}</td>
-              <td>{forecast.summary}</td>
+          {similarWords.map(similarWord =>
+            <tr key={similarWord.word}>
+              <td>{similarWord.word}</td>
+              <td>{similarWord.score}</td>
+              <td>{similarWord.numSyllables}</td>
             </tr>
           )}
         </tbody>
@@ -44,15 +42,15 @@ export class Sweatometer extends Component {
 
     return (
       <div>
-        <h1 id="tabelLabel" >Weather forecast</h1>
-        <p>This component demonstrates fetching data from the server.</p>
+        <h1 id="tabelLabel" >Sweatometer Test</h1>
+        <p>Returns a list of similar sounding words to 'test'.</p>
         {contents}
       </div>
     );
   }
 
   async populateWeatherData() {
-    const response = await fetch('weatherforecast');
+    const response = await fetch('wordfinder');
     const data = await response.json();
     this.setState({ forecasts: data, loading: false });
   }
