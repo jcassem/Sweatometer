@@ -1,6 +1,6 @@
 using Newtonsoft.Json;
 
-namespace Sweatometer
+namespace Sweatometer.Model
 {
     public class SimilarWord
     {
