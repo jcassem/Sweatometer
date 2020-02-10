@@ -8,7 +8,7 @@ The main service this webapp aims to provide is the Sweatometer itself, which wi
 your word equation (word1 + word2 = yourCraftedWord), evaluate it, and return a score based on
 how sweaty it is.
 
-This service is reliant on the [Data Muse](http://www.datamuse.com/) website, which provides a series 
+This service is reliant on the [Data Muse API](http://www.datamuse.com/api), which provides a series 
 of word services.
 
 

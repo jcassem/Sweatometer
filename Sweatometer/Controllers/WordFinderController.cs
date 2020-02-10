@@ -25,11 +25,21 @@ namespace Sweatometer
         }
 
         [HttpGet("{wordToSoundLike}")]
-        public async Task<IEnumerable<SimilarWord>> Get(string wordToSoundLike)
+        public async Task<IEnumerable<SimilarWord>> FindSimilar(string wordToSoundLike)
         {
             logger.LogInformation("Get similar words to...");
 
             var result = await wordFinderService.GetWordsThatSoundLikeAsync(wordToSoundLike);
+
+            return result.ToArray();
+        }
+
+        [HttpGet("{firstWord}/{secondWord}")]
+        public async Task<IEnumerable<string>> FindMerge(string firstWord, string secondWord)
+        {
+            logger.LogInformation("Find merge words...");
+
+            var result = await wordFinderService.MergeWords(firstWord, secondWord);
 
             return result.ToArray();
         }

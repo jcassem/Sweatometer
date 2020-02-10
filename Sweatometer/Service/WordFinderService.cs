@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -16,6 +17,8 @@ namespace Sweatometer.Service
         public static readonly string DATAMUSE_SPELLS_LIKE_API = "https://api.datamuse.com/words?sp=";
 
         public static readonly string DATAMUSE_MEANS_LIKE_API = "https://api.datamuse.com/words?ml=";
+
+        public static readonly string DATAMUSE_SUGGEST_API = "https://api.datamuse.com/sug?s=";
 
         private readonly ILogger<WordFinderService> logger;
 
@@ -69,6 +72,37 @@ namespace Sweatometer.Service
             }
 
             return similarWords;
+        }
+
+        ///<inheritdoc/>
+        public async Task<ICollection<string>> MergeWords(string firstWord, string secondWord)
+        {
+            var firstWordOptions = await GetWordsThatSoundLikeAsync(firstWord);
+            var secondWordOptions = await GetWordsThatSoundLikeAsync(secondWord);
+            var mappedPairs = new List<string>();
+
+            foreach(SimilarWord firstWordOption in firstWordOptions){
+                string[] fwSplit = firstWordOption.Word.Split(' ');
+                foreach(string fw in fwSplit)
+                {
+                    foreach(SimilarWord secondWordOption in secondWordOptions)
+                    {
+                        string[] swSplit = secondWordOption.Word.Split(' ');
+                        foreach(string sw in swSplit)
+                        {
+                            if (sw.ToLower().Equals(fw.ToLower()))
+                            {
+                                mappedPairs.Add("Words '" + firstWordOption.Word
+                                    + "' and '" + secondWordOption.Word
+                                    + "' are a match as they both contain '"
+                                    + fw + "'");
+                            }
+                        }
+                    }
+                }
+            }
+            
+            return mappedPairs;
         }
     }
 }
