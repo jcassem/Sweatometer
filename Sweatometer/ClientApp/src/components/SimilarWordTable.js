@@ -2,10 +2,6 @@ import React, { Component } from 'react';
 
 export class SimilarWordTable extends Component {
 
-    constructor(props) {
-        super(props);
-    }
-
     static renderSimilarWordsTable(similarWords) {
     return (
         <table className='table table-striped' aria-labelledby="tabelLabel">
