@@ -35,7 +35,7 @@ namespace Sweatometer
         }
 
         [HttpGet("{firstWord}/{secondWord}")]
-        public async Task<IEnumerable<string>> FindMerge(string firstWord, string secondWord)
+        public async Task<IEnumerable<SimilarWord>> FindMerge(string firstWord, string secondWord)
         {
             logger.LogInformation("Find merge words...");
 

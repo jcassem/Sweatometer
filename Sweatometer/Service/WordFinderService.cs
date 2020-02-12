@@ -75,11 +75,11 @@ namespace Sweatometer.Service
         }
 
         ///<inheritdoc/>
-        public async Task<ICollection<string>> MergeWords(string firstWord, string secondWord)
+        public async Task<ICollection<SimilarWord>> MergeWords(string firstWord, string secondWord)
         {
             var firstWordOptions = await GetWordsThatSoundLikeAsync(firstWord);
             var secondWordOptions = await GetWordsThatSoundLikeAsync(secondWord);
-            var mappedPairs = new List<string>();
+            var mappedPairs = new List<SimilarWord>();
 
             foreach(SimilarWord firstWordOption in firstWordOptions){
                 string[] fwSplit = firstWordOption.Word.Split(' ');
@@ -92,10 +92,13 @@ namespace Sweatometer.Service
                         {
                             if (sw.ToLower().Equals(fw.ToLower()))
                             {
-                                mappedPairs.Add("Words '" + firstWordOption.Word
+                                var foundWord = new SimilarWord();
+                                foundWord.Word = "Words '" + firstWordOption.Word
                                     + "' and '" + secondWordOption.Word
                                     + "' are a match as they both contain '"
-                                    + fw + "'");
+                                    + fw + "'";
+                                foundWord.Score = (firstWordOption.Score + secondWordOption.Score) / 2;
+                                mappedPairs.Add(foundWord);
                             }
                         }
                     }

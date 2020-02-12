@@ -22,6 +22,6 @@ namespace Sweatometer.Service
         /// <param name="firstWord">First word for the merge.</param>
         /// <param name="secondWord">Second word for the merge.</param>
         /// <returns>Collection of merge word options.</returns>
-        Task<ICollection<string>> MergeWords(string firstWord, string secondWord);
+        Task<ICollection<SimilarWord>> MergeWords(string firstWord, string secondWord);
     }
 }
