@@ -33,6 +33,24 @@ namespace Sweatometer.Service
             return await GetWordsFromDataMuseApi(DATAMUSE_SOUNDS_LIKE_API + wordToSoundLike);
         }
 
+        ///<inheritdoc/>
+        public async Task<ICollection<SimilarWord>> GetWordsToMeanLikeAsync(string wordToMeanLike)
+        {
+            return await GetWordsFromDataMuseApi(DATAMUSE_MEANS_LIKE_API + wordToMeanLike);
+        }
+
+        ///<inheritdoc/>
+        public async Task<ICollection<SimilarWord>> GetWordsToSpellLikeAsync(string wordToSpellLike)
+        {
+            return await GetWordsFromDataMuseApi(DATAMUSE_SPELLS_LIKE_API + wordToSpellLike);
+        }
+
+        ///<inheritdoc/>
+        public async Task<ICollection<SimilarWord>> GetSuggestedWordsAsync(string toSuggestFrom)
+        {
+            return await GetWordsFromDataMuseApi(DATAMUSE_SUGGEST_API + toSuggestFrom);
+        }
+
         /// <summary>
         /// Sends a request to the DataMuse endpoint provided and returns the collection of similar words provided.
         /// </summary>
@@ -75,33 +93,26 @@ namespace Sweatometer.Service
         }
 
         ///<inheritdoc/>
-        public async Task<ICollection<SimilarWord>> MergeWords(string firstWord, string secondWord)
+        public async Task<ICollection<SimilarWord>> MergeWords(string fixedWord, string pivotWord)
         {
-            var firstWordOptions = await GetWordsThatSoundLikeAsync(firstWord);
-            var secondWordOptions = await GetWordsThatSoundLikeAsync(secondWord);
             var mappedPairs = new List<SimilarWord>();
+            var pivotWordOptions = await GetWordsThatSoundLikeAsync(pivotWord);
 
-            foreach(SimilarWord firstWordOption in firstWordOptions){
-                string[] fwSplit = firstWordOption.Word.Split(' ');
-                foreach(string fw in fwSplit)
+            foreach(var similarWordOption in pivotWordOptions)
+            {
+                if (fixedWord.Contains(similarWordOption.Word))
                 {
-                    foreach(SimilarWord secondWordOption in secondWordOptions)
-                    {
-                        string[] swSplit = secondWordOption.Word.Split(' ');
-                        foreach(string sw in swSplit)
-                        {
-                            if (sw.ToLower().Equals(fw.ToLower()))
-                            {
-                                var foundWord = new SimilarWord();
-                                foundWord.Word = "Words '" + firstWordOption.Word
-                                    + "' and '" + secondWordOption.Word
-                                    + "' are a match as they both contain '"
-                                    + fw + "'";
-                                foundWord.Score = (firstWordOption.Score + secondWordOption.Score) / 2;
-                                mappedPairs.Add(foundWord);
-                            }
-                        }
-                    }
+                    var replaceStartIndex = fixedWord.IndexOf(similarWordOption.Word, StringComparison.Ordinal);
+                    var replaceEndIndex = replaceStartIndex + similarWordOption.Word.Length;
+
+                    var mappedPair = new SimilarWord();
+
+                    mappedPair.Word = fixedWord.Substring(0, replaceStartIndex)
+                        + pivotWord
+                        + fixedWord.Substring(replaceEndIndex);
+                    mappedPair.Score = similarWordOption.Score;
+
+                    mappedPairs.Add(mappedPair);
                 }
             }
             
