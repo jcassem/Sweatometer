@@ -12,5 +12,14 @@ namespace Sweatometer.Model
 
         [JsonProperty("numSyllables")]
         public long NumSyllables { get; set; }
+
+        public SimilarWord() { }
+
+        public SimilarWord(string Word, long Score, long NumSyllables = -1)
+        {
+            this.Word = Word;
+            this.Score = Score;
+            this.NumSyllables = NumSyllables;
+        }
     }
 }

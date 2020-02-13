@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
@@ -100,23 +101,56 @@ namespace Sweatometer.Service
 
             foreach(var similarWordOption in pivotWordOptions)
             {
-                if (fixedWord.Contains(similarWordOption.Word))
+                var singleWordOption = RemoveDoubleLettersFromString(similarWordOption.Word);
+                SimilarWord match = null;
+
+                if (fixedWord.Contains(singleWordOption))
+                {
+                    var replaceStartIndex = fixedWord.IndexOf(singleWordOption, StringComparison.Ordinal);
+                    var replaceEndIndex = replaceStartIndex + singleWordOption.Length;
+
+                    match = new SimilarWord(
+                        fixedWord.Substring(0, replaceStartIndex) + pivotWord + fixedWord.Substring(replaceEndIndex),
+                        similarWordOption.Score
+                    );
+
+                    
+                }
+                else if (fixedWord.Contains(similarWordOption.Word))
                 {
                     var replaceStartIndex = fixedWord.IndexOf(similarWordOption.Word, StringComparison.Ordinal);
                     var replaceEndIndex = replaceStartIndex + similarWordOption.Word.Length;
 
-                    var mappedPair = new SimilarWord();
+                    match = new SimilarWord(
+                        fixedWord.Substring(0, replaceStartIndex) + pivotWord + fixedWord.Substring(replaceEndIndex),
+                        similarWordOption.Score
+                    );
+                }
 
-                    mappedPair.Word = fixedWord.Substring(0, replaceStartIndex)
-                        + pivotWord
-                        + fixedWord.Substring(replaceEndIndex);
-                    mappedPair.Score = similarWordOption.Score;
-
-                    mappedPairs.Add(mappedPair);
+                if(match != null && !mappedPairs.Any(x => x.Word.Equals(match.Word)))
+                {
+                    mappedPairs.Add(match);
                 }
             }
             
             return mappedPairs;
+        }
+
+        public static string RemoveDoubleLettersFromString(string doubleLetterWord)
+        {
+            var characters = doubleLetterWord.ToCharArray();
+            char lastChar = characters[0];
+            string singleLetterWord = lastChar.ToString();
+
+            foreach(char letter in characters)
+            {
+                if (!letter.Equals(lastChar)) {
+                    singleLetterWord += letter;
+                    lastChar = letter;
+                }
+            }
+
+            return singleLetterWord;
         }
     }
 }
