@@ -4,6 +4,7 @@ import { Layout } from './components/Layout';
 import { Home } from './components/Home';
 import { FindApp } from './components/FindApp';
 import { MergeApp } from './components/MergeApp';
+import { SweatTestApp } from './components/SweatTestApp';
 
 import './custom.css'
 
@@ -16,6 +17,7 @@ export default class App extends Component {
             <Route exact path='/' component={Home} />
             <Route path='/find' component={FindApp} />
             <Route path='/merge' component={MergeApp} />
+            <Route path='/sweat' component={SweatTestApp} />
       </Layout>
     );
   }
