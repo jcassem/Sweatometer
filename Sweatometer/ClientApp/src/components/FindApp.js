@@ -8,22 +8,23 @@ export class FindApp extends Component {
         super(props);
         this.state = {
             wordToSoundLike: '',
+            searchType: 'soundsLike',
             loading: false,
             similarWords: []
         };
 
-        this.setWordToSoundLike = this.setWordToSoundLike.bind(this);
+        this.handleFieldChange = this.handleFieldChange.bind(this);
         this.populateSimilarWordData = this.populateSimilarWordData.bind(this);
     }
 
-    setWordToSoundLike(updatedWordToSoundLike) {
-        this.setState({ wordToSoundLike: updatedWordToSoundLike });
+    handleFieldChange(fieldId, value) {
+        this.setState({ [fieldId]: value });
     }
 
     async populateSimilarWordData() {
         this.setState({ loading: true });
 
-        const response = await fetch('api/wordfinder/' + this.state.wordToSoundLike);
+        const response = await fetch('api/wordfinder/find/' + this.state.searchType + "/" + this.state.wordToSoundLike);
         const data = await response.json();
 
         this.setState({
@@ -36,7 +37,8 @@ export class FindApp extends Component {
         return (
             <div>
                 <h1>Find values similar to a word</h1>
-                <FindForm onChange={this.setWordToSoundLike} onSubmit={this.populateSimilarWordData}/>
+                <FindForm searchType={this.state.searchType}
+                    onChange={this.handleFieldChange} onSubmit={this.populateSimilarWordData} />
                 <br/>
                 <SimilarWordTable loading={this.state.loading} similarWords={this.state.similarWords} />
             </div>

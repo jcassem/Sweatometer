@@ -22,15 +22,18 @@ export class MergeForm extends Component {
     render() {
         return (
             <form onSubmit={this.handleSubmit}>
-                <label>
-                    Word 1:
-                    <input type="text" name="firstWord" value={this.props.firstWord} onChange={this.handleChange} />
-                </label>
-                <label>
-                    Word 2:
-                    <input type="text" name="secondWord" value={this.props.secondWord} onChange={this.handleChange} />
-                </label>
-                <input type="submit" value="Submit" />
+                <div class="form-row">
+                    <div class="col-md-6 mb-6">
+                        <label>Word To Add To:</label>
+                        <input type="text" class="form-control" name="firstWord" value={this.props.firstWord} onChange={this.handleChange} />
+                    </div>
+                    <div class="col-md-6 mb-6">
+                        <label>Word To Add:</label>
+                        <input type="text" class="form-control" name="secondWord" value={this.props.secondWord} onChange={this.handleChange} />
+                    </div>
+                </div>
+
+                <input type="submit" value="Search" class="btn btn-primary btn-lg btn-block submit" />
             </form>
         );
   }

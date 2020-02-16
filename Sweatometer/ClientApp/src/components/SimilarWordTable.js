@@ -9,7 +9,6 @@ export class SimilarWordTable extends Component {
                 <tr>
                     <th>Word</th>
                     <th>Score</th>
-                    <th>Number of Syllables</th>
                 </tr>
             </thead>
             <tbody>
@@ -17,7 +16,6 @@ export class SimilarWordTable extends Component {
                     <tr key={similarWord.word}>
                         <td>{similarWord.word}</td>
                         <td>{similarWord.score}</td>
-                        <td>{similarWord.numSyllables}</td>
                     </tr>
                 )}
             </tbody>

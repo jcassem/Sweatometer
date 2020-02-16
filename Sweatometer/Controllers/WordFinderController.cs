@@ -24,17 +24,37 @@ namespace Sweatometer
             this.wordFinderService = wordFinderService;
         }
 
-        [HttpGet("{wordToSoundLike}")]
-        public async Task<IEnumerable<SimilarWord>> FindSimilar(string wordToSoundLike)
+        [HttpGet("find/soundsLike/{wordToSoundLike}")]
+        public async Task<IEnumerable<SimilarWord>> FindSoundLike(string wordToSoundLike)
         {
-            logger.LogInformation("Get similar words to...");
+            logger.LogInformation("Find words to sound like: " + wordToSoundLike);
 
             var result = await wordFinderService.GetWordsThatSoundLikeAsync(wordToSoundLike);
 
             return result.ToArray();
         }
 
-        [HttpGet("{firstWord}/{secondWord}")]
+        [HttpGet("find/spellsLike/{wordToSpellLike}")]
+        public async Task<IEnumerable<SimilarWord>> FindSpellsLike(string wordToSpellLike)
+        {
+            logger.LogInformation("Find words to spell like: " + wordToSpellLike);
+
+            var result = await wordFinderService.GetWordsToSpellLikeAsync(wordToSpellLike);
+
+            return result.ToArray();
+        }
+
+        [HttpGet("find/meansLike/{wordToMeanLike}")]
+        public async Task<IEnumerable<SimilarWord>> FindMeansLike(string wordToMeanLike)
+        {
+            logger.LogInformation("Find words to mean like: " + wordToMeanLike);
+
+            var result = await wordFinderService.GetWordsToMeanLikeAsync(wordToMeanLike);
+
+            return result.ToArray();
+        }
+
+        [HttpGet("merge/{firstWord}/{secondWord}")]
         public async Task<IEnumerable<SimilarWord>> FindMerge(string firstWord, string secondWord)
         {
             logger.LogInformation("Find merge words...");
