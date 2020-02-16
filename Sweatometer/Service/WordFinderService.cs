@@ -97,9 +97,12 @@ namespace Sweatometer.Service
         public async Task<ICollection<SimilarWord>> MergeWords(string fixedWord, string pivotWord)
         {
             var mappedPairs = new List<SimilarWord>();
-            var pivotWordOptions = await GetWordsThatSoundLikeAsync(pivotWord);
 
-            foreach(var similarWordOption in pivotWordOptions)
+            var pivotWordSoundsLikeOptions = await GetWordsThatSoundLikeAsync(pivotWord);
+            var pivotWordSpellsLikeOptions = await GetWordsToSpellLikeAsync(pivotWord);
+            var pivotOptions = pivotWordSoundsLikeOptions.Concat(pivotWordSpellsLikeOptions);
+
+            foreach(var similarWordOption in pivotOptions)
             {
                 var singleWordOption = RemoveDoubleLettersFromString(similarWordOption.Word);
                 SimilarWord match = null;

@@ -36,7 +36,7 @@ export class MergeApp extends Component {
     render() {
         return (
             <div class="container-fluid">
-                <h1>Find values similar to a word</h1>
+                <h1>Merge two words</h1>
                 <div class="row">
                     <div class="col">
                     <MergeForm firstWord={this.state.firstWord} secondWord={this.state.secondWord}
