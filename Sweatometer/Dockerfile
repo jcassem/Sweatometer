@@ -12,3 +12,5 @@ FROM mcr.microsoft.com/dotnet/core/aspnet:3.0
 COPY --from=builder /Sweatometer/bin/Debug/netcoreapp3.0/publish/ /Sweatometer/
 WORKDIR /Sweatometer
 ENTRYPOINT dotnet Sweatometer.dll
+
+EXPOSE 80

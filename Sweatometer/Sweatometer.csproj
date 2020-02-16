@@ -17,6 +17,7 @@
     <!-- Don't publish the SPA source files, but do show them in the project files list -->
     <Content Remove="$(SpaRoot)**" />
     <None Include="$(SpaRoot)**" Exclude="$(SpaRoot)node_modules\**" />
+    <Content Remove="Dockerrun.aws.json" />
   </ItemGroup>
 
   <ItemGroup>
@@ -31,8 +32,6 @@
     <None Remove="ClientApp\src\components\Merge.js~" />
     <None Remove="ClientApp\src\components\Find %28copy%29.js" />
     <None Remove="ClientApp\src\components\Merge.js~" />
-    <None Remove="Sweatometer.pdb" />
-    <None Remove="ClientApp\build\manifest.json" />
   </ItemGroup>
   <Target Name="DebugEnsureNodeEnv" BeforeTargets="Build" Condition=" '$(Configuration)' == 'Debug' And !Exists('$(SpaRoot)node_modules') ">
     <!-- Ensure Node.js is installed -->

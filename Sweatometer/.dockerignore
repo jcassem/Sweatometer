@@ -1,0 +1,6 @@
+# Elastic Beanstalk Files
+.elasticbeanstalk/*
+.git
+.gitignore
+ClientApp/node_modules/*
+bin/*
