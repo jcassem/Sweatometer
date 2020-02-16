@@ -2,6 +2,8 @@ import React, { Component } from 'react';
 
 export class FindForm extends Component {
 
+    static wordName = "Word";
+
     constructor(props) {
         super(props);
 
@@ -14,7 +16,18 @@ export class FindForm extends Component {
     }
 
     handleSubmit(event) {
-        this.props.onSubmit();
+        let errors = "";
+
+        if (this.props.searchWord.length <= 2) {
+            errors += FindForm.wordName + " must be more than two characters long.\n";
+        }
+
+        if (errors.length > 0) {
+            alert("Form contains errors:\n" + errors);
+        }
+        else {
+            this.props.onSubmit();
+        }
 
         event.preventDefault();
     }
@@ -24,15 +37,15 @@ export class FindForm extends Component {
             <form onSubmit={this.handleSubmit}>
                 <div class="form-row">
                     <div class="col-md-6 mb-6">
-                        <label>Word:</label>
-                        <input class="form-control" type="text" name="wordToSoundLike" value={this.props.wordToSoundLike} onChange={this.handleChange} />
+                        <label for="searchWord">{FindForm.wordName}:</label>
+                        <input class="form-control" type="text" id="searchWord" name="searchWord" value={this.props.searchWord} onChange={this.handleChange} />
                     </div>
 
                     <div class="col-md-6 mb-6">
                         <label>Search Type:</label>
                         <select value={this.props.searchType} name="searchType"
                             onChange={this.handleChange} class="custom-select">
-                            <option selected value="soundsLike">Sounds Like</option>
+                            <option value="soundsLike">Sounds Like</option>
                             <option value="spellsLike">Spells Like</option>
                             <option selected value="meansLike">Means Like</option>
                         </select>
