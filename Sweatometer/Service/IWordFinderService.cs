@@ -45,6 +45,6 @@ namespace Sweatometer.Service
         /// <param name="fixedWord">Word to stay the same and work into the second word.</param>
         /// <param name="pivotWord">Pivot word to search against.</param>
         /// <returns>Collection of merge word options.</returns>
-        Task<ICollection<SimilarWord>> MergeWords(string fixedWord, string pivotWord);
+        Task<ICollection<MergedWord>> MergeWords(string fixedWord, string pivotWord);
     }
 }

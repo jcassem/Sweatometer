@@ -1,3 +1,5 @@
+using System;
+using System.Text;
 using Newtonsoft.Json;
 
 namespace Sweatometer.Model
@@ -20,6 +22,28 @@ namespace Sweatometer.Model
             this.Word = Word;
             this.Score = Score;
             this.NumSyllables = NumSyllables;
+        }
+
+        public override bool Equals(object obj)
+        {
+            return obj is SimilarWord word &&
+                   Word == word.Word &&
+                   Score == word.Score &&
+                   NumSyllables == word.NumSyllables;
+        }
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(Word, Score, NumSyllables);
+        }
+
+        public override string ToString()
+        {
+            return new StringBuilder()
+                .Append($"{nameof(Word)}: {Word} ")
+                .Append($"{nameof(Score)}: {Score} ")
+                .Append($"{nameof(NumSyllables)}: {NumSyllables}")
+                .ToString();
         }
     }
 }
