@@ -9,6 +9,6 @@ RUN dotnet publish
 
 FROM mcr.microsoft.com/dotnet/core/aspnet:3.0
 
-COPY --from=builder /Sweatometer/Sweatometer/bin/Debug/netcoreapp3.0/publish/ /Sweatometer/
+COPY --from=builder /Sweatometer/bin/Debug/netcoreapp3.0/publish/ /Sweatometer/
 WORKDIR /Sweatometer
 ENTRYPOINT dotnet Sweatometer.dll
