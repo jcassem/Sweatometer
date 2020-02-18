@@ -123,42 +123,25 @@ namespace Sweatometer.Service
                 var pivotWordSpellsLikeOptions = await GetWordsToSpellLikeAsync(selectedPivotWord);
                 var pivotOptions = pivotWordSoundsLikeOptions.Concat(pivotWordSpellsLikeOptions).ToList();
 
-
                 foreach (var similarWordOption in pivotOptions)
                 {
-                    var singleWordOption = RemoveDoubleLettersFromString(similarWordOption.Word);
-                    MergedWord match = null;
-
-                    if (fixedWord.Contains(singleWordOption))
+                    foreach (string wordAttempt in FindCommonCharacterReplacements(similarWordOption.Word).Where(w => fixedWord.Contains(w)))
                     {
-                        var replaceStartIndex = fixedWord.IndexOf(singleWordOption, StringComparison.Ordinal);
-                        var replaceEndIndex = replaceStartIndex + singleWordOption.Length;
+                        var replaceStartIndex = fixedWord.IndexOf(wordAttempt, StringComparison.Ordinal);
+                        var replaceEndIndex = replaceStartIndex + wordAttempt.Length;
 
-                        match = new MergedWord
+                        MergedWord match = new MergedWord
                         {
                             Word = fixedWord.Substring(0, replaceStartIndex) + selectedPivotWord + fixedWord.Substring(replaceEndIndex),
                             Score = similarWordOption.Score,
-                            InjectedWord = singleWordOption,
+                            InjectedWord = wordAttempt,
                             ParentWord = fixedWord
                         };
-                    }
-                    else if (fixedWord.Contains(similarWordOption.Word))
-                    {
-                        var replaceStartIndex = fixedWord.IndexOf(similarWordOption.Word, StringComparison.Ordinal);
-                        var replaceEndIndex = replaceStartIndex + similarWordOption.Word.Length;
 
-                        match = new MergedWord
+                        if (!mappedPairs.Any(x => x.Word == match.Word))
                         {
-                            Word = fixedWord.Substring(0, replaceStartIndex) + selectedPivotWord + fixedWord.Substring(replaceEndIndex),
-                            Score = similarWordOption.Score,
-                            InjectedWord = selectedPivotWord,
-                            ParentWord = fixedWord
-                        };
-                    }
-
-                    if (match != null && !mappedPairs.Any(x => x.Word.Equals(match.Word)))
-                    {
-                        mappedPairs.Add(match);
+                            mappedPairs.Add(match);
+                        }
                     }
                 }
             }
@@ -174,7 +157,7 @@ namespace Sweatometer.Service
 
             foreach (char letter in characters)
             {
-                if (!letter.Equals(lastChar))
+                if (letter != lastChar)
                 {
                     singleLetterWord += letter;
                     lastChar = letter;
@@ -182,6 +165,15 @@ namespace Sweatometer.Service
             }
 
             return singleLetterWord;
+        }
+
+        private IEnumerable<string> FindCommonCharacterReplacements(string sourceWord)
+        {
+
+            yield return RemoveDoubleLettersFromString(sourceWord);
+
+            yield return sourceWord.Replace("ph", "f");
+            yield return sourceWord.Replace("f", "ph");
         }
     }
 }
