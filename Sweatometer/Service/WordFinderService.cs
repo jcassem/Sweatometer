@@ -87,55 +87,65 @@ namespace Sweatometer.Service
             }
             catch (Exception exception)
             {
-                logger.LogDebug("Exception occured when attempting to hit endpoint (" + apiEndpoint + "):" + exception.ToString());
+                logger.LogDebug(exception, $"Exception occurred when attempting to hit endpoint ({apiEndpoint}).");
             }
 
             return similarWords;
         }
 
         ///<inheritdoc/>
-        public async Task<ICollection<SimilarWord>> MergeWords(string fixedWord, string pivotWord)
+        public async Task<ICollection<MergedWord>> MergeWords(string fixedWord, string pivotWord)
         {
-            var mappedPairs = new List<SimilarWord>();
+            return await MergeWords(fixedWord, pivotWord, MergeWordsOptions.Default);
+        }
 
-            var pivotWordSoundsLikeOptions = await GetWordsThatSoundLikeAsync(pivotWord);
-            var pivotWordSpellsLikeOptions = await GetWordsToSpellLikeAsync(pivotWord);
-            var pivotOptions = pivotWordSoundsLikeOptions.Concat(pivotWordSpellsLikeOptions);
+        public async Task<ICollection<MergedWord>> MergeWords(string fixedWord, string pivotWord, MergeWordsOptions mergeWordsOptions)
+        {
+            var mappedPairs = new List<MergedWord>();
 
-            foreach(var similarWordOption in pivotOptions)
+            var pivotWords = new List<string>();
+            pivotWords.Add(pivotWord);
+            if (mergeWordsOptions.CheckSynonyms)
             {
-                var singleWordOption = RemoveDoubleLettersFromString(similarWordOption.Word);
-                SimilarWord match = null;
+                var synonyms = await GetWordsToMeanLikeAsync(pivotWord);
+                var filteredSynonyms = synonyms
+                    .Where(s => s.Score > mergeWordsOptions.MinimumScore)
+                    .OrderByDescending(s => s.Score)
+                    .Take(mergeWordsOptions.MaxSynonyms)
+                    .Select(s => s.Word)
+                    .Distinct();
+                pivotWords.AddRange(filteredSynonyms);
+            }
 
-                if (fixedWord.Contains(singleWordOption))
+            foreach (var selectedPivotWord in pivotWords)
+            {
+                var pivotWordSoundsLikeOptions = await GetWordsThatSoundLikeAsync(selectedPivotWord);
+                var pivotWordSpellsLikeOptions = await GetWordsToSpellLikeAsync(selectedPivotWord);
+                var pivotOptions = pivotWordSoundsLikeOptions.Concat(pivotWordSpellsLikeOptions).ToList();
+
+                foreach (var similarWordOption in pivotOptions)
                 {
-                    var replaceStartIndex = fixedWord.IndexOf(singleWordOption, StringComparison.Ordinal);
-                    var replaceEndIndex = replaceStartIndex + singleWordOption.Length;
+                    foreach (string wordAttempt in FindCommonCharacterReplacements(similarWordOption.Word).Where(w => fixedWord.Contains(w)))
+                    {
+                        var replaceStartIndex = fixedWord.IndexOf(wordAttempt, StringComparison.Ordinal);
+                        var replaceEndIndex = replaceStartIndex + wordAttempt.Length;
 
-                    match = new SimilarWord(
-                        fixedWord.Substring(0, replaceStartIndex) + pivotWord + fixedWord.Substring(replaceEndIndex),
-                        similarWordOption.Score
-                    );
+                        MergedWord match = new MergedWord
+                        {
+                            Word = fixedWord.Substring(0, replaceStartIndex) + selectedPivotWord + fixedWord.Substring(replaceEndIndex),
+                            Score = similarWordOption.Score,
+                            InjectedWord = wordAttempt,
+                            ParentWord = fixedWord
+                        };
 
-                    
-                }
-                else if (fixedWord.Contains(similarWordOption.Word))
-                {
-                    var replaceStartIndex = fixedWord.IndexOf(similarWordOption.Word, StringComparison.Ordinal);
-                    var replaceEndIndex = replaceStartIndex + similarWordOption.Word.Length;
-
-                    match = new SimilarWord(
-                        fixedWord.Substring(0, replaceStartIndex) + pivotWord + fixedWord.Substring(replaceEndIndex),
-                        similarWordOption.Score
-                    );
-                }
-
-                if(match != null && !mappedPairs.Any(x => x.Word.Equals(match.Word)))
-                {
-                    mappedPairs.Add(match);
+                        if (!mappedPairs.Any(x => x.Word == match.Word))
+                        {
+                            mappedPairs.Add(match);
+                        }
+                    }
                 }
             }
-            
+
             return mappedPairs;
         }
 
@@ -145,15 +155,25 @@ namespace Sweatometer.Service
             char lastChar = characters[0];
             string singleLetterWord = lastChar.ToString();
 
-            foreach(char letter in characters)
+            foreach (char letter in characters)
             {
-                if (!letter.Equals(lastChar)) {
+                if (letter != lastChar)
+                {
                     singleLetterWord += letter;
                     lastChar = letter;
                 }
             }
 
             return singleLetterWord;
+        }
+
+        private IEnumerable<string> FindCommonCharacterReplacements(string sourceWord)
+        {
+
+            yield return RemoveDoubleLettersFromString(sourceWord);
+
+            yield return sourceWord.Replace("ph", "f");
+            yield return sourceWord.Replace("f", "ph");
         }
     }
 }
