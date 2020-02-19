@@ -2,8 +2,10 @@ FROM mcr.microsoft.com/dotnet/core/sdk:3.0 AS builder
 
 RUN apt-get update && \
     apt-get install -y unzip libunwind8 gettext nodejs npm
+
 ADD . /Sweatometer
 WORKDIR /Sweatometer
+
 RUN dotnet build
 RUN dotnet publish
 
