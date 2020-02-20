@@ -13,7 +13,11 @@ namespace Sweatometer.Service
         /// <summary>
         /// Gets or sets the minimum score a synonym should have to be considered for merge.
         /// </summary>
-        public int MinimumScore { get; set; } = 70000;
+        public int MeansLikeMinimumScore { get; set; } = 70000;
+
+        public int MaxWordsToSoundLike { get; set; } = 10;
+
+        public int MaxWordsToSpellLike { get; set; } = 10;
 
         public static MergeWordsOptions Default
         {

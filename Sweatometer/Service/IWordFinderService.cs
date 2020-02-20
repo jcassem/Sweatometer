@@ -38,13 +38,12 @@ namespace Sweatometer.Service
         Task<ICollection<SimilarWord>> GetSuggestedWordsAsync(string toSuggestFrom);
 
         /// <summary>
-        /// Return a collection of options that relate to the merge of these two words,
-        /// where the fixed word is never changed but the pivot word will be amended in order
-        /// to work in the fixed word.
+        /// Generates a collection of variations of the <code>parentWord</code>
+        /// with the <code>injectWord</code> (or a similar verison of it) inserted within it.
         /// </summary>
-        /// <param name="fixedWord">Word to stay the same and work into the second word.</param>
-        /// <param name="pivotWord">Pivot word to search against.</param>
-        /// <returns>Collection of merge word options.</returns>
-        Task<ICollection<MergedWord>> MergeWords(string fixedWord, string pivotWord);
+        /// <param name="parentWord">Word to inject into.</param>
+        /// <param name="injectWord">Word to inject.</param>
+        /// <returns>Collection of merged words.</returns>
+        Task<ICollection<MergedWord>> MergeWords(string parentWord, string injectWord);
     }
 }

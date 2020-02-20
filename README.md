@@ -12,6 +12,11 @@ This service is reliant on the [Data Muse API](http://www.datamuse.com/api), whi
 of word services.
 
 
+## Technology
+
+This project uses .NET Core and React.
+
+
 ## Services
 
 Other services will include:
@@ -22,7 +27,14 @@ Other services will include:
 
 ## Running
 
-This is a .NET Core and React project. To get started run:
+### Locally
 ```bash
 dotnet run
+```
+
+### Via Docker
+```bash
+cd Sweatometer
+docker build -t sweatometer .
+docker run sweatometer:latestß
 ```
