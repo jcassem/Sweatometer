@@ -16,12 +16,16 @@ namespace Sweatometer
 
         private readonly IWordFinderService wordFinderService;
 
+        private readonly IMergeService mergeService;
+
         public WordFinderController(
             ILogger<WordFinderController> logger,
-            IWordFinderService wordFinderService)
+            IWordFinderService wordFinderService,
+            IMergeService mergeService)
         {
             this.logger = logger;
             this.wordFinderService = wordFinderService;
+            this.mergeService = mergeService;
         }
 
         [HttpGet("find/soundsLike/{wordToSoundLike}")]
@@ -59,7 +63,7 @@ namespace Sweatometer
         {
             logger.LogInformation("Find merge words...");
 
-            var result = await wordFinderService.MergeWords(firstWord, secondWord);
+            var result = await mergeService.MergeWords(firstWord, secondWord);
 
             return result.ToArray();
         }

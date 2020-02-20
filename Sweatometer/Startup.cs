@@ -31,6 +31,7 @@ namespace Sweatometer
             });
 
             services.AddScoped<IWordFinderService, WordFinderService>();
+            services.AddScoped<IMergeService, MergeService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
