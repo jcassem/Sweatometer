@@ -10,6 +10,7 @@ export class MergeApp extends Component {
             firstWord: '',
             secondWord: '',
             loading: false,
+            hasRun: false,
             similarWords: []
         };
 
@@ -22,7 +23,10 @@ export class MergeApp extends Component {
     }
 
     async mergeWords() {
-        this.setState({ loading: true });
+        this.setState({
+            loading: true,
+            hasRun: true,
+        });
 
         const response = await fetch('api/wordfinder/merge/' + this.state.firstWord + "/" + this.state.secondWord);
         const data = await response.json();
@@ -39,13 +43,13 @@ export class MergeApp extends Component {
                 <h1>Merge two words</h1>
                 <div class="row">
                     <div class="col">
-                    <MergeForm firstWord={this.state.firstWord} secondWord={this.state.secondWord}
+                        <MergeForm firstWord={this.state.firstWord} secondWord={this.state.secondWord}
                             onChange={this.handleFieldChange} onSubmit={this.mergeWords} />
-                        </div>
+                    </div>
                 </div>
                 <div class="row mt-4">
                     <div class="col">
-                        <SimilarWordTable loading={this.state.loading} similarWords={this.state.similarWords} />
+                        {!this.state.hasRun ? '' : <SimilarWordTable loading={this.state.loading} similarWords={this.state.similarWords} />}
                     </div>
                 </div>
             </div>

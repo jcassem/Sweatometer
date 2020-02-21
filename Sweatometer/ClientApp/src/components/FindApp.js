@@ -10,6 +10,7 @@ export class FindApp extends Component {
             searchWord: '',
             searchType: 'soundsLike',
             loading: false,
+            hasRun: false,
             similarWords: []
         };
 
@@ -22,7 +23,10 @@ export class FindApp extends Component {
     }
 
     async populateSimilarWordData() {
-        this.setState({ loading: true });
+        this.setState({
+            loading: true,
+            hasRun: true
+        });
 
         const response = await fetch('api/wordfinder/find/' + this.state.searchType + "/" + this.state.searchWord);
         const data = await response.json();
@@ -40,7 +44,7 @@ export class FindApp extends Component {
                 <FindForm searchType={this.state.searchType} searchWord={this.state.searchWord}
                     onChange={this.handleFieldChange} onSubmit={this.populateSimilarWordData} />
                 <br/>
-                <SimilarWordTable loading={this.state.loading} similarWords={this.state.similarWords} />
+                {!this.state.hasRun ? '' : <SimilarWordTable loading={this.state.loading} similarWords={this.state.similarWords} />}
             </div>
         );
   }
