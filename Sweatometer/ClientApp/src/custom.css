@@ -16,3 +16,8 @@ code {
 .submit {
     margin-top: 10px;
 }
+
+.navbar-logo {
+    width: 50px;
+    height: 50px;
+}
