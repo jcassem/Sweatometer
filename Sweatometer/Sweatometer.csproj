@@ -33,6 +33,9 @@
     <None Remove="ClientApp\src\components\Find %28copy%29.js" />
     <None Remove="ClientApp\src\components\Merge.js~" />
   </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Model\Config\" />
+  </ItemGroup>
   <Target Name="DebugEnsureNodeEnv" BeforeTargets="Build" Condition=" '$(Configuration)' == 'Debug' And !Exists('$(SpaRoot)node_modules') ">
     <!-- Ensure Node.js is installed -->
     <Exec Command="node --version" ContinueOnError="true">

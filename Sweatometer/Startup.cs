@@ -1,6 +1,5 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.SpaServices.ReactDevelopmentServer;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -29,6 +28,8 @@ namespace Sweatometer
             {
                 configuration.RootPath = "ClientApp/build";
             });
+
+            services.Configure<MergeOptions>(Configuration.GetSection("MergeOptions"));
 
             services.AddScoped<IWordFinderService, WordFinderService>();
             services.AddScoped<IMergeService, MergeService>();

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Sweatometer.Model;
 
 namespace Sweatometer.Service
@@ -14,12 +15,16 @@ namespace Sweatometer.Service
 
         private readonly IWordFinderService wordFinderService;
 
+        private readonly IOptions<MergeOptions> mergeOptions;
+
         public MergeService(
             ILogger<WordFinderService> logger,
+            IOptions<MergeOptions> mergeOptions,
             IWordFinderService wordFinderService)
         {
             this.logger = logger;
             this.wordFinderService = wordFinderService;
+            this.mergeOptions = mergeOptions;
         }
 
         ///<inheritdoc/>
@@ -27,27 +32,21 @@ namespace Sweatometer.Service
         {
             var watch = System.Diagnostics.Stopwatch.StartNew();
 
-            var mergedWords = await MergeWords(fixedWord, injectWord, MergeWordsOptions.Default);
-
-            watch.Stop();
-            logger.LogDebug("MergeWord Runtime: " + watch.ElapsedMilliseconds + " milliseconds"); 
-
-            return mergedWords;
-        }
-
-        private async Task<ICollection<MergedWord>> MergeWords(string fixedWord, string injectWord, MergeWordsOptions mergeWordsOptions)
-        {
             var mappedPairs = new List<MergedWord>();
 
             // Create a list of synonyms for the injected word
             var injectWords = new List<string>();
             injectWords.Add(injectWord);
-            injectWords.AddRange(await GetFilteredSynonymsOfWord(injectWord, mergeWordsOptions));
+
+            if (mergeOptions?.Value?.CheckSynonyms == true)
+            {
+                injectWords.AddRange(await GetFilteredSynonymsOfWord(injectWord));
+            }
 
             // Go through each inject word option (synonyms) and each of their related words (sounds like, spells like)
             foreach (var selectedinjectWord in injectWords)
             {
-                var pivotOptions = await GetFilteredSimilarWordsFromWord(selectedinjectWord, mergeWordsOptions);
+                var pivotOptions = await GetFilteredSimilarWordsFromWord(selectedinjectWord);
 
                 // Process each similar word option and the word replacements for these words.
                 foreach (var similarWordOption in pivotOptions)
@@ -69,10 +68,18 @@ namespace Sweatometer.Service
                         if (!mappedPairs.Any(x => x.Word == match.Word))
                         {
                             mappedPairs.Add(match);
+
+                            if (mergeOptions?.Value?.ReturnOnFirstResult == true)
+                            {
+                                return mappedPairs;
+                            }
                         }
                     }
                 }
             }
+
+            watch.Stop();
+            logger.LogDebug("MergeWord Runtime: " + watch.ElapsedMilliseconds + " milliseconds");
 
             return mappedPairs;
         }
@@ -81,42 +88,35 @@ namespace Sweatometer.Service
         /// Returns a filtered list of synonyms from the provided word.
         /// </summary>
         /// <param name="sourceWord">Word to search against.</param>
-        /// <param name="mergeWordsOptions">Filter options.</param>
         /// <returns>Filtered list of synonyms.</returns>
-        private async Task<IEnumerable<string>> GetFilteredSynonymsOfWord(string sourceWord, MergeWordsOptions mergeWordsOptions)
+        private async Task<IEnumerable<string>> GetFilteredSynonymsOfWord(string sourceWord)
         {
-            if (mergeWordsOptions.CheckSynonyms)
-            {
-                var synonyms = await wordFinderService.GetWordsToMeanLikeAsync(sourceWord);
+            var synonyms = await wordFinderService.GetWordsToMeanLikeAsync(sourceWord);
 
-                return synonyms
-                    .Where(s => s.Score > mergeWordsOptions.MeansLikeMinimumScore)
-                    .OrderByDescending(s => s.Score)
-                    .Take(mergeWordsOptions.MaxSynonyms)
-                    .Select(s => s.Word)
-                    .Distinct();
-            }
-
-            return Enumerable.Empty<string>();
+            return synonyms
+                .Where(s => s.Score > mergeOptions.Value.MinimumMeanScoreForSynoymns)
+                .OrderByDescending(s => s.Score)
+                .Take(mergeOptions.Value.MaxWordsToMeanLike)
+                .Select(s => s.Word)
+                .Distinct();
         }
 
         /// <summary>
         /// Provides a list of alternative word options that sound or spell like the provided one.
         /// </summary>
         /// <param name="sourceWord">Word to search against.</param>
-        /// <param name="mergeWordsOptions">Filter options.</param>
         /// <returns>Filtered down list of options based of <code>mergeWordOptions</code></returns>
-        private async Task<IList<SimilarWord>> GetFilteredSimilarWordsFromWord(string sourceWord, MergeWordsOptions mergeWordsOptions)
+        private async Task<IList<SimilarWord>> GetFilteredSimilarWordsFromWord(string sourceWord)
         {
             var injectWordSoundsLikeOptions = await wordFinderService.GetWordsThatSoundLikeAsync(sourceWord);
             var filtedinjectWordSoundsLikeOptions = injectWordSoundsLikeOptions
                 .OrderByDescending(s => s.Score)
-                .Take(mergeWordsOptions.MaxWordsToSoundLike);
+                .Take(mergeOptions?.Value?.MaxWordsToSoundLike ?? injectWordSoundsLikeOptions.Count);
 
             var injectWordSpellsLikeOptions = await wordFinderService.GetWordsToSpellLikeAsync(sourceWord);
             var filteredinjectWordSpellsLikeOptions = injectWordSpellsLikeOptions
                 .OrderByDescending(s => s.Score)
-                .Take(mergeWordsOptions.MaxWordsToSpellLike);
+                .Take(mergeOptions?.Value?.MaxWordsToSpellLike ?? injectWordSoundsLikeOptions.Count);
 
             return filtedinjectWordSoundsLikeOptions.Concat(filteredinjectWordSpellsLikeOptions).ToList();
         }
