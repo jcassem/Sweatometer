@@ -1,7 +1,7 @@
 {
     "AWSEBDockerrunVersion": "1",
     "Image": {
-        "Name": "jcassem/sweatometer",
+        "Name": "jcassem/sweatometer:latest",
         "Update": "true"
     },
     "Ports": [{
