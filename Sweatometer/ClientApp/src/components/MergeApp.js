@@ -54,5 +54,5 @@ export class MergeApp extends Component {
                 </div>
             </div>
         );
-  }
+    }
 }

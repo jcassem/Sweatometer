@@ -1,10 +1,12 @@
 import React, { Component } from 'react';
 
-export class MergeForm extends Component {
+export class SweatTestForm extends Component {
 
     static firstWordName = "Parent Word";
 
     static secondWordName = "Inject Word";
+
+    static answerWordName = "Proposed Pun";
 
     constructor(props) {
         super(props);
@@ -22,10 +24,13 @@ export class MergeForm extends Component {
         let errors = "";
 
         if (this.props.firstWord.length <= 2) {
-            errors += MergeForm.firstWordName + " must be more than two characters long.\n";
+            errors += SweatTestForm.firstWordName + " must be more than two characters long.\n";
         }
         if (this.props.secondWord.length <= 2) {
-            errors += MergeForm.secondWordName + " must be more than two characters long.";
+            errors += SweatTestForm.secondWordName + " must be more than two characters long.";
+        }
+        if (this.props.answerWord.length <= 2) {
+            errors += SweatTestForm.answerWordName + " must be more than two characters long.";
         }
 
         if (errors.length > 0) {
@@ -42,25 +47,25 @@ export class MergeForm extends Component {
         return (
             <div>
                 <div class="alert alert-light">
-                    <p>Here '<strong>{MergeForm.firstWordName}</strong>' is the word to inject '<strong>{MergeForm.secondWordName}</strong>'.</p>
-                    <p>E.g. '<strong>{MergeForm.firstWordName}</strong>' = 'Cookie Monster' and <strong>{MergeForm.secondWordName}</strong>' = 'Wookie'</p>
-                    <p>This will inject 'Wookie' into 'Cookie Monster' and produce 'Wookie Monster'!</p>
-                    <br />
-                    <p><strong>Hint:</strong>The merge magic works better when the parent word is longer.</p>
-                    <p>Stuck for options? <strong>Try</strong> 'Elvis Presley' & 'Dog'</p>
+                    <p>How sweaty is your pun?</p>
+                    <p>Where '<strong>{SweatTestForm.firstWordName}</strong>' + <strong>{SweatTestForm.secondWordName}</strong>' = <strong>{SweatTestForm.answerWordName}</strong></p>
                 </div>
                 <div>
 
                 </div>
                 <form onSubmit={this.handleSubmit} class="needs-validation" novalidate>
                     <div class="form-row">
-                        <div class="col-md-6">
-                            <label for="firstWord">{MergeForm.firstWordName}:</label>
+                        <div class="col-md-4">
+                            <label for="firstWord">{SweatTestForm.firstWordName}:</label>
                             <input type="text" class="form-control" id="firstWord" name="firstWord" value={this.props.firstWord} onChange={this.handleChange} />
                         </div>
-                        <div class="col-md-6">
-                            <label for="secondWord">{MergeForm.secondWordName}:</label>
+                        <div class="col-md-4">
+                            <label for="secondWord">{SweatTestForm.secondWordName}:</label>
                             <input type="text" class="form-control" id="secondWord" name="secondWord" value={this.props.secondWord} onChange={this.handleChange} />
+                        </div>
+                        <div class="col-md-4">
+                            <label for="answerWord">{SweatTestForm.answerWordName}:</label>
+                            <input type="text" class="form-control" id="answerWord" name="answerWord" value={this.props.answerWord} onChange={this.handleChange} />
                         </div>
                     </div>
 

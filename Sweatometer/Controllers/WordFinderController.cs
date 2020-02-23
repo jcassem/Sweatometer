@@ -18,14 +18,18 @@ namespace Sweatometer
 
         private readonly IMergeService mergeService;
 
+        private readonly ISweatTestService sweatTestService;
+
         public WordFinderController(
             ILogger<WordFinderController> logger,
             IWordFinderService wordFinderService,
-            IMergeService mergeService)
+            IMergeService mergeService,
+            ISweatTestService sweatTestService)
         {
             this.logger = logger;
             this.wordFinderService = wordFinderService;
             this.mergeService = mergeService;
+            this.sweatTestService = sweatTestService;
         }
 
         [HttpGet("find/soundsLike/{wordToSoundLike}")]
@@ -58,14 +62,22 @@ namespace Sweatometer
             return result.ToArray();
         }
 
-        [HttpGet("merge/{firstWord}/{secondWord}")]
-        public async Task<IEnumerable<SimilarWord>> FindMerge(string firstWord, string secondWord)
+        [HttpGet("merge/{parentWord}/{injectWord}")]
+        public async Task<IEnumerable<SimilarWord>> FindMerge(string parentWord, string injectWord)
         {
-            logger.LogInformation("Find merge words...");
+            logger.LogInformation("Find merged words for '" + parentWord + "' and '" + injectWord + "'");
 
-            var result = await mergeService.MergeWords(firstWord, secondWord);
+            var result = await mergeService.MergeWords(parentWord, injectWord);
 
             return result.ToArray();
+        }
+
+        [HttpGet("sweat/{parentWord}/{injectWord}/{providedAnswer}")]
+        public async Task<SweatTestResult> FindSweatTest(string parentWord, string injectWord, string providedAnswer)
+        {
+            logger.LogInformation("Run Sweat test (" + parentWord + " + " + injectWord + " = " + providedAnswer + ")");
+
+            return await sweatTestService.SweatTest(parentWord, injectWord, providedAnswer);
         }
     }
 }

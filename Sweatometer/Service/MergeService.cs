@@ -28,9 +28,48 @@ namespace Sweatometer.Service
         }
 
         ///<inheritdoc/>
-        public async Task<ICollection<MergedWord>> MergeWords(string fixedWord, string injectWord)
+        public async Task<ICollection<MergedWord>> MergeWords(string parentWord, string injectWord)
         {
             var watch = System.Diagnostics.Stopwatch.StartNew();
+
+            var mappedPairs = await MergeWords(parentWord, injectWord, mergeOptions?.Value?.ReturnOnFirstResult == true);
+
+            watch.Stop();
+            logger.LogInformation("FindBestMergeWord Runtime: " + watch.ElapsedMilliseconds + " milliseconds");
+
+            return mappedPairs;
+        }
+
+        ///<inheritdoc/>
+        public async Task<ICollection<MergedWord>> FindBestMergeWord(string parentWord, string injectWord)
+        {
+            var watch = System.Diagnostics.Stopwatch.StartNew();
+
+            var mappedPairs = await MergeWords(parentWord, injectWord, true);
+
+            watch.Stop();
+            logger.LogInformation("FindBestMergeWord Runtime: " + watch.ElapsedMilliseconds + " milliseconds");
+
+            return mappedPairs;
+        }
+
+        ///<inheritdoc/>
+        public async Task<ICollection<MergedWord>> FindMergeWords(string parentWord, string injectWord)
+        {
+            var watch = System.Diagnostics.Stopwatch.StartNew();
+
+            var mappedPairs = await MergeWords(parentWord, injectWord, false);
+
+            watch.Stop();
+            logger.LogInformation("FindMergeWords Runtime: " + watch.ElapsedMilliseconds + " milliseconds");
+
+            return mappedPairs;
+        }
+
+        private async Task<ICollection<MergedWord>> MergeWords(string parentWord, string injectWord, bool returnOnFirstResult)
+        {
+            parentWord = parentWord.ToLower();
+            injectWord = injectWord.ToLower();
 
             var mappedPairs = new List<MergedWord>();
 
@@ -52,24 +91,24 @@ namespace Sweatometer.Service
                 foreach (var similarWordOption in pivotOptions)
                 {
                     foreach (string wordAttempt in FindCommonCharacterReplacements(similarWordOption.Word)
-                        .Where(w => fixedWord.Contains(w)))
+                        .Where(w => parentWord.Contains(w)))
                     {
-                        var replaceStartIndex = fixedWord.IndexOf(wordAttempt, StringComparison.Ordinal);
+                        var replaceStartIndex = parentWord.IndexOf(wordAttempt, StringComparison.Ordinal);
                         var replaceEndIndex = replaceStartIndex + wordAttempt.Length;
 
                         MergedWord match = new MergedWord
                         {
-                            Word = fixedWord.Substring(0, replaceStartIndex) + selectedinjectWord + fixedWord.Substring(replaceEndIndex),
+                            Word = parentWord.Substring(0, replaceStartIndex) + selectedinjectWord + parentWord.Substring(replaceEndIndex),
                             Score = similarWordOption.Score,
                             InjectedWord = wordAttempt,
-                            ParentWord = fixedWord
+                            ParentWord = parentWord
                         };
 
                         if (!mappedPairs.Any(x => x.Word == match.Word))
                         {
                             mappedPairs.Add(match);
 
-                            if (mergeOptions?.Value?.ReturnOnFirstResult == true)
+                            if (returnOnFirstResult)
                             {
                                 return mappedPairs;
                             }
@@ -77,9 +116,6 @@ namespace Sweatometer.Service
                     }
                 }
             }
-
-            watch.Stop();
-            logger.LogDebug("MergeWord Runtime: " + watch.ElapsedMilliseconds + " milliseconds");
 
             return mappedPairs;
         }
