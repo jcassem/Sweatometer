@@ -47,7 +47,6 @@ export class MergeForm extends Component {
                     <p>This will inject 'Wookie' into 'Cookie Monster' and produce 'Wookie Monster'!</p>
                     <br />
                     <p><strong>Hint:</strong>The merge magic works better when the parent word is longer.</p>
-                    <p>Stuck for options? <strong>Try</strong> 'Elvis Presley' & 'Dog'</p>
                 </div>
                 <div>
 

@@ -11,6 +11,8 @@ export class FindApp extends Component {
             searchType: 'soundsLike',
             loading: false,
             hasRun: false,
+            statusCode: 200,
+            errorMessage: '',
             similarWords: []
         };
 
@@ -28,23 +30,56 @@ export class FindApp extends Component {
             hasRun: true
         });
 
-        const response = await fetch('api/wordfinder/find/' + this.state.searchType + "/" + this.state.searchWord);
-        const data = await response.json();
+        try {
+            const response = await fetch('api/wordfinder/find/' + this.state.searchType + "/" + this.state.searchWord);
+            const status = await response.status;
+            const statusText = await response.statusText;
 
-        this.setState({
-            similarWords: data,
-            loading: false
-        });
+            if (status !== 200) {
+                this.setState({
+                    statusCode: status,
+                    errorMessage: statusText
+                });
+            }
+            else {
+                const data = await response.json();
+
+                this.setState({
+                    similarWords: data,
+                    loading: false,
+                    statusCode: status,
+                    errorMessage: ''
+                });
+            }
+
+        } catch (error) {
+            this.setState({
+                errorMessage: error.message
+            });
+        }
     }
 
     render() {
+        let result = '';
+        if (this.state.hasRun) {
+            if (this.state.statusCode != 200 || this.state.errorMessage.length !== 0) {
+                result =
+                    <div class="alert alert-danger" role="alert">
+                        <h2>{this.state.statusCode}</h2><p>{this.state.errorMessage}</p>
+                    </div>;
+            }
+            else {
+                result = <SimilarWordTable loading={this.state.loading} similarWords={this.state.similarWords} />;
+            }
+        }
+
         return (
             <div>
                 <h1>Find values similar to a word</h1>
                 <FindForm searchType={this.state.searchType} searchWord={this.state.searchWord}
                     onChange={this.handleFieldChange} onSubmit={this.populateSimilarWordData} />
                 <br/>
-                {!this.state.hasRun ? '' : <SimilarWordTable loading={this.state.loading} similarWords={this.state.similarWords} />}
+                {result}
             </div>
         );
   }

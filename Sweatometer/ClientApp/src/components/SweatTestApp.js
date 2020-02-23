@@ -13,6 +13,8 @@ export class SweatTestApp extends Component {
             answerWord: 'Elvis Pawlesley',
             loading: false,
             hasRun: false,
+            statusCode: 200,
+            errorMessage: '',
             sweatTestResult: {}
         };
 
@@ -30,16 +32,49 @@ export class SweatTestApp extends Component {
             hasRun: true,
         });
 
-        const response = await fetch('api/wordfinder/sweat/' + this.state.firstWord + "/" + this.state.secondWord + "/" + this.state.answerWord);
-        const data = await response.json();
+        try {
+            const response = await fetch('api/wordfinder/sweat/' + this.state.firstWord + "/" + this.state.secondWord + "/" + this.state.answerWord);
+            const status = await response.status;
+            const statusText = await response.statusText;
 
-        this.setState({
-            sweatTestResult: data,
-            loading: false
-        });
+            if (status !== 200) {
+                this.setState({
+                    statusCode: status,
+                    errorMessage: statusText
+                });
+            }
+            else {
+                const data = await response.json();
+
+                this.setState({
+                    sweatTestResult: data,
+                    loading: false,
+                    statusCode: status,
+                    errorMessage: ''
+                });
+            }
+
+        } catch(error) {
+            this.setState({
+                errorMessage: error.message
+            });
+        }
     }
 
     render() {
+        let result = '';
+        if (this.state.hasRun) {
+            if (this.state.statusCode != 200 || this.state.errorMessage.length !== 0) {
+                result =
+                    <div class="alert alert-danger" role="alert">
+                        <h2>{this.state.statusCode}</h2><p>{this.state.errorMessage}</p>
+                    </div>;
+            }
+            else {
+                result = <SweatTestResult loading={this.state.loading} sweatTestResult={this.state.sweatTestResult} />;
+            }
+        }
+
         return (
             <div class="container-fluid">
                 <h1>Sweat Test</h1>
@@ -51,7 +86,7 @@ export class SweatTestApp extends Component {
                 </div>
                 <div class="row mt-4">
                     <div class="col">
-                        {!this.state.hasRun ? '' : <SweatTestResult loading={this.state.loading} sweatTestResult={this.state.sweatTestResult} />}
+                        {result}
                     </div>
                 </div>
             </div>

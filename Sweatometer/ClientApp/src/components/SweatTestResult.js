@@ -5,11 +5,11 @@ export class SweatTestResult extends Component {
 
     static renderSweatTestResult(testResult) {
 
-        if (testResult === null || testResult.result == 'NOT_FOUND') {
+        if (testResult == null || testResult.result == 'NOT_FOUND') {
             return <p><em>No result found</em></p>;
         }
 
-        let alternatives = testResult.alternatives !== null && testResult.alternatives.length > 0 ?
+        let alternatives = testResult.alternatives != null && testResult.alternatives.length > 0 ?
             <div class="row mt-4">
                 <div class="col">
                     <h2>Alternatives:</h2>
@@ -18,11 +18,13 @@ export class SweatTestResult extends Component {
             </div>
             : '';
 
+        let score = testResult.score === 0 ? "?" : testResult.score;
+
         return (
             <div>
-                <div>
+                <div class="single-merge-result">
                     <h2>Outcome: {testResult.outcome}</h2>
-                    <h3>Score: {testResult.score}</h3>
+                    <h3>Score: {score}</h3>
                 </div>
                 {alternatives}
             </div>

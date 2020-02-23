@@ -4,7 +4,7 @@ export class SimilarWordTable extends Component {
 
     static renderSimilarWordsTable(similarWords) {
 
-        if (similarWords === null || similarWords.length === 0) {
+        if (similarWords == null || similarWords.length === 0) {
             return (<h1 class="no-merge-result">No results found</h1>);
         }
         else if (similarWords.length == 1) {

@@ -76,7 +76,7 @@ namespace Sweatometer
 
             }
 
-            return SweatTestResult.NOT_FOUND;
+            return SweatTestResult.UNKNOWN;
         }
 
         /// <summary>
