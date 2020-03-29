@@ -16,11 +16,14 @@ export class SimilarWordTable extends Component {
             );
         }
 
+        var mergeResult = similarWords[0].parentWord != null && similarWords[0].parentWord.length > 0;
+
         return (
             <table className='table table-striped' aria-labelledby="tabelLabel">
                 <thead>
                     <tr>
                         <th>Word</th>
+                        {mergeResult ? <th>Merge</th> : ''}
                         <th>Score</th>
                     </tr>
                 </thead>
@@ -28,6 +31,7 @@ export class SimilarWordTable extends Component {
                     {similarWords.map(similarWord =>
                         <tr key={similarWord.word}>
                             <td>{similarWord.word}</td>
+                            {mergeResult ? <td>'{similarWord.parentWord}' x '{similarWord.injectedWord}'</td> : ''}
                             <td>{similarWord.score}</td>
                         </tr>
                     )}

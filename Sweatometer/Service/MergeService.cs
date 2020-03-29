@@ -118,7 +118,7 @@ namespace Sweatometer.Service
                             {
                                 Word = word,
                                 Score = similarWordOption.Score,
-                                InjectedWord = wordAttempt,
+                                InjectedWord = selectedinjectWord,
                                 ParentWord = parentWordOption
                             };
 
