@@ -10,7 +10,7 @@ export class Home extends Component {
                     <h1 class="cover-heading"><i>Sweat</i>: how hard is your pun working?</h1>
                     <p class="lead">Sweat describes the level of effort a forced combination
                             of words (like puns) has been worked itself into existance.</p>
-                    <p class="lead">E.g. <i>Wookie Moster</i> (Cookie Monster x Wookie) is GOLD and would
+                    <p class="lead">E.g. <i>Wookiee Moster</i> (Cookie Monster x Wookiee) is GOLD and would
                             therefore have a low sweat score.</p>
                     <p class="lead">Whereas <i>Buddha Fett</i> (Boba Fett x Buddha) has a much higher
                             sweat-level.</p>

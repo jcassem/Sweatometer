@@ -21,8 +21,8 @@ This project uses .NET Core and React.
 
 Other services will include:
 * Find similar words to a provided input
-* Find a new combination based off multiple words provided (Coming soon)
-* Equaluate a provided combination and provide a Sweat rating (Coming soon)
+* Find a new combination based off multiple words provided
+* Equaluate a provided combination and provide a Sweat rating
 
 
 ## Running
@@ -38,3 +38,9 @@ cd Sweatometer
 docker build -t sweatometer .
 docker run sweatometer:latestß
 ```
+
+## To-dos
+* Move config into advanced search options
+* Add more unit tests
+* Improve merge function (accuracy and efficiency)
+* Make use of DataMuse filter options (could help with the above)

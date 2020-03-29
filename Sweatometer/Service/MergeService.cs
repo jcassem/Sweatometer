@@ -82,6 +82,16 @@ namespace Sweatometer.Service
                 injectWords.AddRange(await GetFilteredSynonymsOfWord(injectWord));
             }
 
+
+            // Create a list of synonyms for the parent word
+            var parentWords = new List<string>();
+            parentWords.Add(parentWord);
+
+            if (mergeOptions?.Value?.CheckSynonymsOfParentWord == true)
+            {
+                parentWords.AddRange(await GetFilteredSynonymsOfWord(parentWord));
+            }
+
             // Go through each inject word option (synonyms) and each of their related words (sounds like, spells like)
             foreach (var selectedinjectWord in injectWords)
             {
@@ -90,27 +100,36 @@ namespace Sweatometer.Service
                 // Process each similar word option and the word replacements for these words.
                 foreach (var similarWordOption in pivotOptions)
                 {
-                    foreach (string wordAttempt in FindCommonCharacterReplacements(similarWordOption.Word)
-                        .Where(w => parentWord.Contains(w)))
+                    foreach(string parentWordOption in parentWords)
                     {
-                        var replaceStartIndex = parentWord.IndexOf(wordAttempt, StringComparison.Ordinal);
-                        var replaceEndIndex = replaceStartIndex + wordAttempt.Length;
-
-                        MergedWord match = new MergedWord
+                        foreach (string wordAttempt in FindCommonCharacterReplacements(similarWordOption.Word)
+                                    .Where(w => parentWordOption.Contains(w)))
                         {
-                            Word = parentWord.Substring(0, replaceStartIndex) + selectedinjectWord + parentWord.Substring(replaceEndIndex),
-                            Score = similarWordOption.Score,
-                            InjectedWord = wordAttempt,
-                            ParentWord = parentWord
-                        };
+                            var replaceStartIndex = parentWordOption.IndexOf(wordAttempt, StringComparison.Ordinal);
+                            var replaceEndIndex = replaceStartIndex + wordAttempt.Length;
 
-                        if (!mappedPairs.Any(x => x.Word == match.Word))
-                        {
-                            mappedPairs.Add(match);
+                            var word = parentWordOption.Substring(0, replaceStartIndex)
+                                    + "-" + selectedinjectWord
+                                    + "-" + parentWordOption.Substring(replaceEndIndex);
+                            word = word[0] == '-' ? word.Substring(1) : word;
+                            word = word[word.Length - 1] == '-' ? word.Remove(word.Length - 1, 1) : word;
 
-                            if (returnOnFirstResult)
+                            MergedWord match = new MergedWord
                             {
-                                return mappedPairs;
+                                Word = word,
+                                Score = similarWordOption.Score,
+                                InjectedWord = wordAttempt,
+                                ParentWord = parentWordOption
+                            };
+
+                            if (!mappedPairs.Any(x => x.Word == match.Word))
+                            {
+                                mappedPairs.Add(match);
+
+                                if (returnOnFirstResult)
+                                {
+                                    return mappedPairs;
+                                }
                             }
                         }
                     }

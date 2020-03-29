@@ -43,8 +43,8 @@ export class MergeForm extends Component {
             <div>
                 <div class="alert alert-light">
                     <p>Here '<strong>{MergeForm.firstWordName}</strong>' is the word to inject '<strong>{MergeForm.secondWordName}</strong>'.</p>
-                    <p>E.g. '<strong>{MergeForm.firstWordName}</strong>' = 'Cookie Monster' and <strong>{MergeForm.secondWordName}</strong>' = 'Wookie'</p>
-                    <p>This will inject 'Wookie' into 'Cookie Monster' and produce 'Wookie Monster'!</p>
+                    <p>E.g. '<strong>{MergeForm.firstWordName}</strong>' = 'Cookie Monster' and <strong>{MergeForm.secondWordName}</strong>' = 'Wookiee'</p>
+                    <p>This will inject 'Wookiee' into 'Cookie Monster' and produce 'Wookiee Monster'!</p>
                     <br />
                     <p><strong>Hint:</strong>The merge magic works better when the parent word is longer.</p>
                 </div>
