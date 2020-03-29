@@ -22,20 +22,19 @@
 
   <ItemGroup>
     <None Remove="ClientApp\README.md" />
-    <None Remove="ClientApp\README.md" />
     <None Remove="ClientApp\src\components\FindApp.js~" />
-    <None Remove="ClientApp\src\components\FindApp.js~" />
-    <None Remove="ClientApp\src\components\Sweatometer %28copy%29.js" />
     <None Remove="ClientApp\src\components\SweatMerge.js~" />
-    <None Remove="ClientApp\src\components\SweatMerge.js~" />
-    <None Remove="ClientApp\src\components\Sweatometer.js" />
     <None Remove="ClientApp\src\components\Merge.js~" />
-    <None Remove="ClientApp\src\components\Find %28copy%29.js" />
-    <None Remove="ClientApp\src\components\Merge.js~" />
+    <None Remove="Data\emoji.txt" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Model\Config\" />
     <Folder Include="Data\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Data\emoji.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <Target Name="DebugEnsureNodeEnv" BeforeTargets="Build" Condition=" '$(Configuration)' == 'Debug' And !Exists('$(SpaRoot)node_modules') ">
     <!-- Ensure Node.js is installed -->

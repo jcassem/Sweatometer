@@ -71,6 +71,8 @@ namespace Sweatometer
                     spa.UseReactDevelopmentServer(npmScript: "start");
                 }
             });
+
+            EmojiLoader.LoadEmojis();
         }
     }
 }
