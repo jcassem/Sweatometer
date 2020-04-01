@@ -34,6 +34,7 @@ namespace Sweatometer
             services.AddScoped<IWordFinderService, WordFinderService>();
             services.AddScoped<IMergeService, MergeService>();
             services.AddScoped<ISweatTestService, SweatTestService>();
+            services.AddScoped<IEmojiSearchService, EmojiSearchService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

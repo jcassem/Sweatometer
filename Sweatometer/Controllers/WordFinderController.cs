@@ -21,16 +21,20 @@ namespace Sweatometer
 
         private readonly ISweatTestService sweatTestService;
 
+        private readonly IEmojiSearchService emojiSearchService;
+
         public WordFinderController(
             ILogger<WordFinderController> logger,
             IWordFinderService wordFinderService,
             IMergeService mergeService,
-            ISweatTestService sweatTestService)
+            ISweatTestService sweatTestService,
+            IEmojiSearchService emojiSearchService)
         {
             this.logger = logger;
             this.wordFinderService = wordFinderService;
             this.mergeService = mergeService;
             this.sweatTestService = sweatTestService;
+            this.emojiSearchService = emojiSearchService;
         }
 
         [HttpGet("find/soundsLike/{wordToSoundLike}")]
@@ -79,6 +83,15 @@ namespace Sweatometer
             logger.LogInformation("Run Sweat test (" + parentWord + " + " + injectWord + " = " + providedAnswer + ")");
 
             return await sweatTestService.SweatTest(parentWord, injectWord, providedAnswer);
+        }
+
+
+        [HttpGet("find/emoji/{wordToSearch}")]
+        public IEnumerable<Emoji> FindEmojisLike(string wordToSearch)
+        {
+            logger.LogInformation("Find emojis like: " + wordToSearch);
+
+            return emojiSearchService.FindEmojisThatMatch(wordToSearch)?.ToArray();
         }
     }
 }
