@@ -8,7 +8,7 @@ export class FindApp extends Component {
         super(props);
         this.state = {
             searchWord: '',
-            searchType: 'soundsLike',
+            searchType: 'meansLike',
             loading: false,
             hasRun: false,
             statusCode: 200,

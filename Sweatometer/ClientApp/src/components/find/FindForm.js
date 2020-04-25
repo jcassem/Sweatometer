@@ -45,9 +45,9 @@ export class FindForm extends Component {
                         <label>Search Type:</label>
                         <select value={this.props.searchType} name="searchType"
                             onChange={this.handleChange} class="custom-select">
+                            <option value="meansLike">Means Like</option>
                             <option value="soundsLike">Sounds Like</option>
                             <option value="spellsLike">Spells Like</option>
-                            <option selected value="meansLike">Means Like</option>
                         </select>
                     </div>
                 </div>
