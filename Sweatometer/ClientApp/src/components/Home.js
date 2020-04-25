@@ -20,6 +20,7 @@ export class Home extends Component {
                     <a type="button" class="btn btn-lg btn-block btn-outline-primary" href="/find">Find similar words</a>
                     <a type="button" class="btn btn-lg btn-block btn-outline-primary" href="/merge">Create a pun (word merge)</a>
                     <a type="button" class="btn btn-lg btn-block btn-outline-primary" href="/sweat">Sweat Test your pun</a>
+                    <a type="button" class="btn btn-lg btn-block btn-outline-primary" href="/emoji">Emoji search</a>
                 </div>
             </div>
         );

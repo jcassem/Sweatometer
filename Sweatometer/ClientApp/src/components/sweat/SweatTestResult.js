@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { SimilarWordTable } from './SimilarWordTable';
+import { SimilarWordTable } from '../SimilarWordTable';
 
 export class SweatTestResult extends Component {
 

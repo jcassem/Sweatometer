@@ -87,11 +87,13 @@ namespace Sweatometer
 
 
         [HttpGet("find/emoji/{wordToSearch}")]
-        public IEnumerable<Emoji> FindEmojisLike(string wordToSearch)
+        public async Task<IEnumerable<Emoji>> FindEmojisLike(string wordToSearch)
         {
             logger.LogInformation("Find emojis like: " + wordToSearch);
 
-            return emojiSearchService.FindEmojisThatMatch(wordToSearch)?.ToArray();
+            var result =  await emojiSearchService.FindEmojisThatMatch(wordToSearch);
+
+            return result.ToArray();
         }
     }
 }

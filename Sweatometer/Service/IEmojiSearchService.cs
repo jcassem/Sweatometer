@@ -14,6 +14,6 @@ namespace Sweatometer.Service
         /// </summary>
         /// <param name="searchWord">Word to search emojis against.</param>
         /// <returns>Collection of emojis that match provided word.</returns>
-        ICollection<Emoji> FindEmojisThatMatch(string searchWord);
+        Task<ICollection<Emoji>> FindEmojisThatMatch(string searchWord);
     }
 }

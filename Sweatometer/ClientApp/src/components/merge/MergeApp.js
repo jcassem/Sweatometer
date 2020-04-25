@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { MergeForm } from './MergeForm';
-import { SimilarWordTable } from './SimilarWordTable';
+import { SimilarWordTable } from '../SimilarWordTable';
 
 export class MergeApp extends Component {
 
