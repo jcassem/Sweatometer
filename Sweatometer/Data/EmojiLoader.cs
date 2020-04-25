@@ -1,9 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.IO;
+using Sweatometer.Service;
 
 namespace Sweatometer
 {
-    public static class EmojiLoader
+    public class EmojiLoader : IEmojiLoader
     {
         private static Dictionary<string, List<string>> emojiDictionary { get; set; }
         public static Dictionary<string, List<string>> EmojiDictionary {
@@ -17,7 +18,13 @@ namespace Sweatometer
             }
         }
 
-        public static void LoadEmojis()
+        private readonly IWordFinderService wordFinderService;
+
+        public EmojiLoader(IWordFinderService wordFinderService){
+            this.wordFinderService = wordFinderService;
+        }
+
+        public void LoadEmojis()
         {
             emojiDictionary = GetEmojisFromFile();
         }
@@ -56,6 +63,19 @@ namespace Sweatometer
             }
 
             return emojiDictionary;
+        }
+
+        // todo use Parallelism to increase efficiency 
+        public async void AddRelatedWordsToEmojiDictionary(){
+            foreach(string key in emojiDictionary.Keys){
+                
+                var emojis = emojiDictionary[key];
+                var relatedWords =  await wordFinderService.GetRelatedTriggerWords(key);
+
+                foreach(var relatedWord in relatedWords){
+                    emojiDictionary.Add(relatedWord.Word, emojis);
+                }
+            }
         }
     }
 }

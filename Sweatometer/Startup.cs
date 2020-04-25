@@ -35,10 +35,11 @@ namespace Sweatometer
             services.AddScoped<IMergeService, MergeService>();
             services.AddScoped<ISweatTestService, SweatTestService>();
             services.AddScoped<IEmojiSearchService, EmojiSearchService>();
+            services.AddScoped<IEmojiLoader, EmojiLoader>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IEmojiLoader emojiLoader)
         {
             if (env.IsDevelopment())
             {
@@ -73,7 +74,8 @@ namespace Sweatometer
                 }
             });
 
-            EmojiLoader.LoadEmojis();
+            emojiLoader.LoadEmojis();
+            // emojiLoader.AddRelatedWordsToEmojiDictionary();
         }
     }
 }

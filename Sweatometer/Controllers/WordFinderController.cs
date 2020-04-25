@@ -67,6 +67,16 @@ namespace Sweatometer
             return result.ToArray();
         }
 
+        [HttpGet("find/relatedTo/{searchWord}")]
+        public async Task<IEnumerable<SimilarWord>> FindRelatedTriggeres(string searchWord)
+        {
+            logger.LogInformation("Find words realted to: " + searchWord);
+
+            var result = await wordFinderService.GetRelatedTriggerWords(searchWord);
+
+            return result.ToArray();
+        }
+
         [HttpGet("merge/{parentWord}/{injectWord}")]
         public async Task<IEnumerable<SimilarWord>> FindMerge(string parentWord, string injectWord)
         {

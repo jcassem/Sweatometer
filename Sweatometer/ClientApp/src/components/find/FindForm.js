@@ -48,6 +48,7 @@ export class FindForm extends Component {
                             <option value="meansLike">Means Like</option>
                             <option value="soundsLike">Sounds Like</option>
                             <option value="spellsLike">Spells Like</option>
+                            <option value="relatedTo">Related To</option>
                         </select>
                     </div>
                 </div>
