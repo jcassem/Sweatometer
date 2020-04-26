@@ -1,19 +1,17 @@
 ﻿using System.Collections.Generic;
 using System.IO;
+using System.Threading.Tasks;
 using Sweatometer.Service;
 
 namespace Sweatometer
 {
     public class EmojiLoader : IEmojiLoader
     {
+        private static readonly string EMOJI_FILE_PATH = System.AppDomain.CurrentDomain.BaseDirectory.ToString() + "Data/emoji.txt";
+
         private static Dictionary<string, List<string>> emojiDictionary { get; set; }
         public static Dictionary<string, List<string>> EmojiDictionary {
             get {
-                if(emojiDictionary == null)
-                {
-                    emojiDictionary = GetEmojisFromFile();
-                }
-
                 return emojiDictionary;
             }
         }
@@ -24,57 +22,64 @@ namespace Sweatometer
             this.wordFinderService = wordFinderService;
         }
 
-        public void LoadEmojis()
+        public async Task LoadEmojisAsync()
         {
-            emojiDictionary = GetEmojisFromFile();
+            await LoadEmojisFromFile();
         }
 
-        private static Dictionary<string, List<string>> GetEmojisFromFile()
+        private static async Task LoadEmojisFromFile()
         {
-            var emojiDictionary = new Dictionary<string, List<string>>();
+            emojiDictionary = new Dictionary<string, List<string>>();
 
-            var filePath = System.AppDomain.CurrentDomain.BaseDirectory.ToString()+ "Data/emoji.txt";
-            StreamReader reader = File.OpenText(filePath);
-
-            string line;
-            while ((line = reader.ReadLine()) != null)
+            using (StreamReader reader = File.OpenText(EMOJI_FILE_PATH))
             {
-                string[] items = line.Split(',');
-                string emoji = null;
-
-                foreach (string item in items)
+                string line = await reader.ReadLineAsync();
+                while (line != null)
                 {
-                    if(emoji == null)
+                    string[] items = line.Split(',');
+                    string emoji = null;
+
+                    foreach (string item in items)
                     {
-                        emoji = item;
-                    }
-                    else
-                    {
-                        if (emojiDictionary.ContainsKey(item))
+                        var trimmedItem = item.Trim();
+
+                        if(emoji == null)
                         {
-                            emojiDictionary[item].Add(emoji);
+                            emoji = trimmedItem;
                         }
                         else
                         {
-                            emojiDictionary.Add(item, new List<string> { emoji });
+                            AddToEmojiDictionary(trimmedItem, new List<string>{emoji});
                         }
                     }
+
+                    line = await reader.ReadLineAsync();
                 }
             }
-
-            return emojiDictionary;
         }
 
-        // todo use Parallelism to increase efficiency 
-        public async void AddRelatedWordsToEmojiDictionary(){
-            foreach(string key in emojiDictionary.Keys){
+        public async Task AddRelatedWordsToEmojiDictionaryAsync(){
+            var initialKeys = new List<string>(emojiDictionary.Keys);
+
+            foreach(string key in initialKeys){
                 
                 var emojis = emojiDictionary[key];
                 var relatedWords =  await wordFinderService.GetRelatedTriggerWords(key);
 
                 foreach(var relatedWord in relatedWords){
-                    emojiDictionary.Add(relatedWord.Word, emojis);
+                    AddToEmojiDictionary(relatedWord.Word, emojis);
                 }
+            }
+        }
+
+        private static void AddToEmojiDictionary(string key, List<string> emojis){
+            if (emojiDictionary.ContainsKey(key))
+            {
+                emojiDictionary[key].AddRange(emojis);
+            }
+            else
+            {
+                emojiDictionary.Add(key, emojis);
             }
         }
     }

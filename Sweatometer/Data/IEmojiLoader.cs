@@ -1,13 +1,11 @@
-﻿using System.Collections.Generic;
-using System.IO;
-using Sweatometer.Service;
+﻿using System.Threading.Tasks;
 
 namespace Sweatometer
 {
     public interface IEmojiLoader
     {
-        void LoadEmojis();
+        Task LoadEmojisAsync();
 
-        void AddRelatedWordsToEmojiDictionary();
+        Task AddRelatedWordsToEmojiDictionaryAsync();
     }
 }

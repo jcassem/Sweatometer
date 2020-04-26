@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.SpaServices.ReactDevelopmentServer;
@@ -39,7 +40,7 @@ namespace Sweatometer
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IEmojiLoader emojiLoader)
+        public async void Configure(IApplicationBuilder app, IWebHostEnvironment env, IEmojiLoader emojiLoader)
         {
             if (env.IsDevelopment())
             {
@@ -74,8 +75,9 @@ namespace Sweatometer
                 }
             });
 
-            emojiLoader.LoadEmojis();
-            // emojiLoader.AddRelatedWordsToEmojiDictionary();
+            await emojiLoader.LoadEmojisAsync();
+            // todo save these results as they're expensive to compile
+            // await Task.Run(() =>  emojiLoader.AddRelatedWordsToEmojiDictionaryAsync());
         }
     }
 }
