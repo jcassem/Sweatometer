@@ -4,7 +4,7 @@ namespace Sweatometer
 {
     public interface IEmojiLoader
     {
-        Task LoadEmojisAsync();
+        void LoadEmojis();
 
         Task AddRelatedWordsToEmojiDictionaryAsync();
     }

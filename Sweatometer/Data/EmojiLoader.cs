@@ -1,13 +1,14 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 using Sweatometer.Service;
 
 namespace Sweatometer
 {
     public class EmojiLoader : IEmojiLoader
     {
-        private static readonly string EMOJI_FILE_PATH = System.AppDomain.CurrentDomain.BaseDirectory.ToString() + "Data/emoji.txt";
+        private static readonly string EMOJI_JSON_FILE_PATH = System.AppDomain.CurrentDomain.BaseDirectory.ToString() + "Data/emoji.json";
 
         private static Dictionary<string, List<string>> emojiDictionary { get; set; }
         public static Dictionary<string, List<string>> EmojiDictionary {
@@ -22,40 +23,24 @@ namespace Sweatometer
             this.wordFinderService = wordFinderService;
         }
 
-        public async Task LoadEmojisAsync()
+        public  void LoadEmojis()
         {
-            await LoadEmojisFromFile();
+            LoadEmojisFromFile();
         }
 
-        private static async Task LoadEmojisFromFile()
+        private static void LoadEmojisFromFile()
         {
-            emojiDictionary = new Dictionary<string, List<string>>();
-
-            using (StreamReader reader = File.OpenText(EMOJI_FILE_PATH))
-            {
-                string line = await reader.ReadLineAsync();
-                while (line != null)
-                {
-                    string[] items = line.Split(',');
-                    string emoji = null;
-
-                    foreach (string item in items)
-                    {
-                        var trimmedItem = item.Trim();
-
-                        if(emoji == null)
-                        {
-                            emoji = trimmedItem;
-                        }
-                        else
-                        {
-                            AddToEmojiDictionary(trimmedItem, new List<string>{emoji});
-                        }
-                    }
-
-                    line = await reader.ReadLineAsync();
-                }
+            var jsonRaw = File.ReadAllText(EMOJI_JSON_FILE_PATH);
+            var values = JsonConvert.DeserializeObject<Dictionary<string, List<string>>>(jsonRaw);
+            if(values != null){
+                emojiDictionary = values;
             }
+        }
+
+        private void persistEmojiDictionaryToJsonFile(){
+            string json = JsonConvert.SerializeObject(emojiDictionary, Formatting.Indented);
+
+            File.WriteAllText(EMOJI_JSON_FILE_PATH, json);
         }
 
         public async Task AddRelatedWordsToEmojiDictionaryAsync(){
