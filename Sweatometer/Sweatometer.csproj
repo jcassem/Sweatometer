@@ -25,7 +25,6 @@
     <None Remove="ClientApp\src\components\FindApp.js~" />
     <None Remove="ClientApp\src\components\SweatMerge.js~" />
     <None Remove="ClientApp\src\components\Merge.js~" />
-    <None Remove="Data\emoji.txt" />
     <None Remove="ClientApp\src\components\FindForm.js~" />
     <None Remove="ClientApp\src\components\MergeApp.js~" />
     <None Remove="ClientApp\src\components\MergeForm.js~" />
@@ -41,11 +40,6 @@
     <Folder Include="ClientApp\src\components\merge\" />
     <Folder Include="ClientApp\src\components\sweat\" />
     <Folder Include="ClientApp\src\components\emoji\" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Data\emoji.txt">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
   </ItemGroup>
   <Target Name="DebugEnsureNodeEnv" BeforeTargets="Build" Condition=" '$(Configuration)' == 'Debug' And !Exists('$(SpaRoot)node_modules') ">
     <!-- Ensure Node.js is installed -->

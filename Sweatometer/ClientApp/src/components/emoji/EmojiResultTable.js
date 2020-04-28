@@ -71,9 +71,9 @@ export class EmojiResultTable extends Component {
         }
         else if (emojis.length == 1) {
            return (
-               <div class="  ngle-merge-result">
-                   <h1>{emojis[0].Icon}</h1>
-                   <p>{emojis[0].Description}</p>
+               <div class="single-merge-result">
+                   <h1>{emojis[0].icon}</h1>
+                   <p>{emojis[0].description}</p>
                </div>
            );
         }

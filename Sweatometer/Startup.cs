@@ -76,8 +76,9 @@ namespace Sweatometer
             });
 
             emojiLoader.LoadEmojis();
-            // todo save these results as they're expensive to compile
-            // await Task.Run(() =>  emojiLoader.AddRelatedWordsToEmojiDictionaryAsync());
+
+            // uncomment to regenerate emojiFull.json
+            // await emojiLoader.AddRelatedWordsToEmojiDictionaryAsync();
         }
     }
 }
