@@ -71,7 +71,15 @@ export class EmojiResultTable extends Component {
         }
 
         var combinedFirstResult = "";
-        Object.keys(emojisSet).map((key, i) => combinedFirstResult += emojisSet[key][0].icon + " ");
+        Object.keys(emojisSet).map((key, i) => {
+            var proposedEmojiOrWord = key;
+
+            if(emojisSet[key] != null && emojisSet[key][0]){
+                proposedEmojiOrWord = emojisSet[key][0].icon + " ";
+            }
+            
+            combinedFirstResult += proposedEmojiOrWord + " ";
+        });
 
         return (
             <div class="container">
