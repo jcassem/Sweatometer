@@ -7,7 +7,7 @@ export class EmojiResultTable extends Component {
     constructor(state) {
         super(state);
         this.state = {
-            searchWord: 'smile',
+            searchWord: 'shutter island',
             loading: false,
             hasRun: false,
             statusCode: 200,
@@ -35,7 +35,7 @@ export class EmojiResultTable extends Component {
         });
 
         try {
-            const response = await fetch('api/wordfinder/find/emoji/' + this.state.searchWord)
+            const response = await fetch('api/wordfinder/find/emoji/set/' + this.state.searchWord)
             const status = await response.status;
             const statusText = await response.statusText;
 
@@ -62,6 +62,46 @@ export class EmojiResultTable extends Component {
             });
         }
 
+    }
+
+    static renderEmojiSetTable(emojisSet) {
+
+        if (emojisSet == null || emojisSet.length === 0) {
+           return (<h1 class="no-merge-result">No results found</h1>);
+        }
+
+        var combinedFirstResult = "";
+        Object.keys(emojisSet).map((key, i) => combinedFirstResult += emojisSet[key][0].icon + " ");
+
+        return (
+            <div class="container">
+                <div class="row">
+                    <div class="card emoji-set-card">
+                        <div class="card-body">
+                            <h1>{combinedFirstResult}</h1>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <table className='table table-striped' aria-labelledby="tabelLabel">
+                        <thead>
+                            <tr>
+                                <th>Word</th>
+                                <th>Emojis</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {Object.keys(emojisSet).map((key, i) =>
+                                <tr key={i}>
+                                    <td>{key}</td>
+                                    <td>{EmojiResultTable.renderEmojiTable(emojisSet[key])}</td>
+                                </tr>
+                            )}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        );
     }
 
     static renderEmojiTable(emojis) {
@@ -112,7 +152,7 @@ export class EmojiResultTable extends Component {
                     result = 'loading'
                 }
                 else {
-                    result = EmojiResultTable.renderEmojiTable(this.state.emojis)
+                    result = EmojiResultTable.renderEmojiSetTable(this.state.emojis)
                 }
             }
         }

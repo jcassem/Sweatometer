@@ -96,14 +96,24 @@ namespace Sweatometer
         }
 
 
-        [HttpGet("find/emoji/{wordToSearch}")]
-        public async Task<IEnumerable<Emoji>> FindEmojisLike(string wordToSearch)
+        [HttpGet("find/emoji/{searchTerm}")]
+        public async Task<IEnumerable<Emoji>> FindEmojisLike(string searchTerm)
         {
-            logger.LogInformation("Find emojis like: " + wordToSearch);
+            logger.LogInformation("Find emojis like: " + searchTerm);
 
-            var result =  await emojiSearchService.FindEmojisThatMatch(wordToSearch);
+            var result =  await emojiSearchService.FindEmojisThatMatch(searchTerm);
 
             return result.ToArray();
+        }
+        
+        [HttpGet("find/emoji/set/{searchTerm}")]
+        public async Task<IDictionary<string, ICollection<Emoji>>> FindEmojiSetLike(string searchTerm)
+        {
+            logger.LogInformation("Find emoji set like: " + searchTerm);
+
+            var result =  await emojiSearchService.FindSetOfEmojisThatMatch(searchTerm);
+
+            return result;
         }
     }
 }

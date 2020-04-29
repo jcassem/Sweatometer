@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -12,14 +13,37 @@ namespace Sweatometer
     public class EmojiSearchService : IEmojiSearchService
     {
         ///<inheritdoc/>
-        public async Task<ICollection<Emoji>> FindEmojisThatMatch(string searchWord)
+        public async Task<IDictionary<string,ICollection<Emoji>>> FindSetOfEmojisThatMatch(string searchTerm)
+        {
+            var foundEmojiDictionary = new Dictionary<string, ICollection<Emoji>>();
+
+            var result = await FindEmojisThatMatch(searchTerm);
+
+            if(!result.Any()){
+                var searchWords = searchTerm.Split(' ');
+                foreach(var searchWord in searchWords){
+                    var wordResult = await FindEmojisThatMatch(searchWord);
+                    foundEmojiDictionary.Add(searchWord, wordResult);
+                }
+            }
+            else{
+                foundEmojiDictionary.Add(searchTerm, result);
+            }
+
+            return foundEmojiDictionary;
+        }
+
+        ///<inheritdoc/>
+        public async Task<ICollection<Emoji>> FindEmojisThatMatch(string searchTerm)
         {
             var emojis = new List<Emoji>();
             var keys = EmojiLoader.EmojiDictionary.Keys;
 
             await Task.Run(() => {
-                var matchedKeys = keys.Where(key => ContainsAllWords(key, searchWord));
-
+                var matchedKeys = keys.Where(key => key.ToLower().Equals(searchTerm.ToLower())).ToList();
+                matchedKeys.AddRange(keys.Where(key => WholeWordSearch(key, searchTerm) && !matchedKeys.Contains(key)));
+                matchedKeys.AddRange(keys.Where(key => ContainsAllWords(key, searchTerm) && !matchedKeys.Contains(key)));
+                
                 if (matchedKeys.Any())
                 {
                     foreach (String key in matchedKeys)

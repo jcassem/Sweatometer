@@ -30,3 +30,9 @@ code {
 .single-merge-result h1 {
     font-size: 5em;
 }
+
+.emoji-set-card {
+  margin: 10px;
+  width: 100%;
+  text-align: center;
+}
