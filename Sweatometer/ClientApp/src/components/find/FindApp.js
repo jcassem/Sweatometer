@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { FindForm } from './FindForm';
-import { SimilarWordTable } from './SimilarWordTable';
+import { SimilarWordTable } from '../SimilarWordTable';
 
 export class FindApp extends Component {
 
@@ -8,7 +8,7 @@ export class FindApp extends Component {
         super(props);
         this.state = {
             searchWord: '',
-            searchType: 'soundsLike',
+            searchType: 'meansLike',
             loading: false,
             hasRun: false,
             statusCode: 200,

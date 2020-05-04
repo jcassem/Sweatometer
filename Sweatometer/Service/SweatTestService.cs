@@ -28,7 +28,14 @@ namespace Sweatometer
             providedAnswer = providedAnswer.ToLower();
             SweatTestResult result = new SweatTestResult();
 
-            var foundOptions = await mergeService.FindMergeWords(parentWord, injectWord);
+            var foundOptions = await mergeService.MergeWords(
+                parentWord, 
+                injectWord,
+                ResultSet.ALL_RESULTS,
+                SynonymsOfInjectWord.INCLUDE,
+                SynonymsOfParentWord.EXCLUDE
+            );
+            
             NormaliseScores(foundOptions);
 
             result.Alternatives = foundOptions.Where(x => x.Word != providedAnswer).ToList();
@@ -55,7 +62,8 @@ namespace Sweatometer
         {
             if (options.Contains(candidate))
             {
-                var ratio = candidate.Score / options.Select(x => x.Score).Max();
+                var denominator = options.Select(x => x.Score).Max();
+                var ratio = denominator == 0 ? 0 : candidate.Score / denominator;
 
                 if(ratio >= 0.9)
                 {

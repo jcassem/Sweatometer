@@ -30,35 +30,33 @@ namespace Sweatometer.Service
         ///<inheritdoc/>
         public async Task<ICollection<MergedWord>> MergeWords(string parentWord, string injectWord)
         {
-            var watch = System.Diagnostics.Stopwatch.StartNew();
-
-            var mappedPairs = await MergeWords(parentWord, injectWord, mergeOptions?.Value?.ReturnOnFirstResult == true);
-
-            watch.Stop();
-            logger.LogInformation("FindBestMergeWord Runtime: " + watch.ElapsedMilliseconds + " milliseconds");
-
-            return mappedPairs;
+            return await MergeWords(
+                parentWord, 
+                injectWord,
+                mergeOptions?.Value?.ReturnOnFirstResult == true ? ResultSet.FIRST_RESULT_ONLY : ResultSet.ALL_RESULTS,
+                mergeOptions?.Value?.CheckSynonymsOfInjectWord == true ? SynonymsOfInjectWord.INCLUDE : SynonymsOfInjectWord.EXCLUDE,
+                mergeOptions?.Value?.CheckSynonymsOfParentWord == true ? SynonymsOfParentWord.INCLUDE : SynonymsOfParentWord.EXCLUDE
+            );
         }
 
         ///<inheritdoc/>
-        public async Task<ICollection<MergedWord>> FindBestMergeWord(string parentWord, string injectWord)
+        public async Task<ICollection<MergedWord>> MergeWords(
+            string parentWord, 
+            string injectWord,
+            ResultSet returnOnFirstResult,
+            SynonymsOfInjectWord checkSynonymsOfInjectWord,
+            SynonymsOfParentWord checkSynonymsOfParentWord
+        )
         {
             var watch = System.Diagnostics.Stopwatch.StartNew();
 
-            var mappedPairs = await MergeWords(parentWord, injectWord, true);
-
-            watch.Stop();
-            logger.LogInformation("FindBestMergeWord Runtime: " + watch.ElapsedMilliseconds + " milliseconds");
-
-            return mappedPairs;
-        }
-
-        ///<inheritdoc/>
-        public async Task<ICollection<MergedWord>> FindMergeWords(string parentWord, string injectWord)
-        {
-            var watch = System.Diagnostics.Stopwatch.StartNew();
-
-            var mappedPairs = await MergeWords(parentWord, injectWord, false);
+            var mappedPairs = await FindMergeWords(
+                parentWord, 
+                injectWord,
+                returnOnFirstResult,
+                checkSynonymsOfInjectWord,
+                checkSynonymsOfParentWord
+            );
 
             watch.Stop();
             logger.LogInformation("FindMergeWords Runtime: " + watch.ElapsedMilliseconds + " milliseconds");
@@ -66,7 +64,14 @@ namespace Sweatometer.Service
             return mappedPairs;
         }
 
-        private async Task<ICollection<MergedWord>> MergeWords(string parentWord, string injectWord, bool returnOnFirstResult)
+        private async Task<ICollection<MergedWord>> FindMergeWords(
+            string parentWord, 
+            string injectWord, 
+            ResultSet returnOnFirstResult,
+            SynonymsOfInjectWord checkSynonymsOfInjectWord,
+            SynonymsOfParentWord checkSynonymsOfParentWord
+
+            )
         {
             parentWord = parentWord.ToLower();
             injectWord = injectWord.ToLower();
@@ -77,17 +82,16 @@ namespace Sweatometer.Service
             var injectWords = new List<string>();
             injectWords.Add(injectWord);
 
-            if (mergeOptions?.Value?.CheckSynonyms == true)
+            if (checkSynonymsOfInjectWord.Equals(SynonymsOfInjectWord.INCLUDE))
             {
                 injectWords.AddRange(await GetFilteredSynonymsOfWord(injectWord));
             }
-
 
             // Create a list of synonyms for the parent word
             var parentWords = new List<string>();
             parentWords.Add(parentWord);
 
-            if (mergeOptions?.Value?.CheckSynonymsOfParentWord == true)
+            if (checkSynonymsOfParentWord.Equals(SynonymsOfParentWord.INCLUDE))
             {
                 parentWords.AddRange(await GetFilteredSynonymsOfWord(parentWord));
             }
@@ -109,10 +113,8 @@ namespace Sweatometer.Service
                             var replaceEndIndex = replaceStartIndex + wordAttempt.Length;
 
                             var word = parentWordOption.Substring(0, replaceStartIndex)
-                                    + "-" + selectedinjectWord
-                                    + "-" + parentWordOption.Substring(replaceEndIndex);
-                            word = word[0] == '-' ? word.Substring(1) : word;
-                            word = word[word.Length - 1] == '-' ? word.Remove(word.Length - 1, 1) : word;
+                                    + selectedinjectWord
+                                    + parentWordOption.Substring(replaceEndIndex);
 
                             MergedWord match = new MergedWord
                             {
@@ -126,7 +128,7 @@ namespace Sweatometer.Service
                             {
                                 mappedPairs.Add(match);
 
-                                if (returnOnFirstResult)
+                                if (returnOnFirstResult.Equals(ResultSet.FIRST_RESULT_ONLY))
                                 {
                                     return mappedPairs;
                                 }

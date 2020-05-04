@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import { Sweatometer } from './Sweatometer';
 import { SweatMerge } from './SweatMerge';
 
 export class Merge extends Component {

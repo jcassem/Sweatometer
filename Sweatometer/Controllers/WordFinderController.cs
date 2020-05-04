@@ -21,16 +21,20 @@ namespace Sweatometer
 
         private readonly ISweatTestService sweatTestService;
 
+        private readonly IEmojiSearchService emojiSearchService;
+
         public WordFinderController(
             ILogger<WordFinderController> logger,
             IWordFinderService wordFinderService,
             IMergeService mergeService,
-            ISweatTestService sweatTestService)
+            ISweatTestService sweatTestService,
+            IEmojiSearchService emojiSearchService)
         {
             this.logger = logger;
             this.wordFinderService = wordFinderService;
             this.mergeService = mergeService;
             this.sweatTestService = sweatTestService;
+            this.emojiSearchService = emojiSearchService;
         }
 
         [HttpGet("find/soundsLike/{wordToSoundLike}")]
@@ -63,6 +67,16 @@ namespace Sweatometer
             return result.ToArray();
         }
 
+        [HttpGet("find/relatedTo/{searchWord}")]
+        public async Task<IEnumerable<SimilarWord>> FindRelatedTriggeres(string searchWord)
+        {
+            logger.LogInformation("Find words realted to: " + searchWord);
+
+            var result = await wordFinderService.GetRelatedTriggerWords(searchWord);
+
+            return result.ToArray();
+        }
+
         [HttpGet("merge/{parentWord}/{injectWord}")]
         public async Task<IEnumerable<SimilarWord>> FindMerge(string parentWord, string injectWord)
         {
@@ -79,6 +93,27 @@ namespace Sweatometer
             logger.LogInformation("Run Sweat test (" + parentWord + " + " + injectWord + " = " + providedAnswer + ")");
 
             return await sweatTestService.SweatTest(parentWord, injectWord, providedAnswer);
+        }
+
+
+        [HttpGet("find/emoji/{searchTerm}")]
+        public async Task<IEnumerable<Emoji>> FindEmojisLike(string searchTerm)
+        {
+            logger.LogInformation("Find emojis like: " + searchTerm);
+
+            var result =  await emojiSearchService.FindEmojisThatMatch(searchTerm);
+
+            return result.ToArray();
+        }
+        
+        [HttpGet("find/emoji/set/{searchTerm}")]
+        public async Task<IDictionary<string, ICollection<Emoji>>> FindEmojiSetLike(string searchTerm)
+        {
+            logger.LogInformation("Find emoji set like: " + searchTerm);
+
+            var result =  await emojiSearchService.FindSetOfEmojisThatMatch(searchTerm);
+
+            return result;
         }
     }
 }

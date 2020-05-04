@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.SpaServices.ReactDevelopmentServer;
@@ -34,10 +35,12 @@ namespace Sweatometer
             services.AddScoped<IWordFinderService, WordFinderService>();
             services.AddScoped<IMergeService, MergeService>();
             services.AddScoped<ISweatTestService, SweatTestService>();
+            services.AddScoped<IEmojiSearchService, EmojiSearchService>();
+            services.AddScoped<IEmojiLoader, EmojiLoader>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public async void Configure(IApplicationBuilder app, IWebHostEnvironment env, IEmojiLoader emojiLoader)
         {
             if (env.IsDevelopment())
             {
@@ -71,6 +74,11 @@ namespace Sweatometer
                     spa.UseReactDevelopmentServer(npmScript: "start");
                 }
             });
+
+            emojiLoader.LoadEmojis();
+
+            // uncomment to regenerate emojiFull.json
+            // await emojiLoader.AddRelatedWordsToEmojiDictionaryAsync();
         }
     }
 }

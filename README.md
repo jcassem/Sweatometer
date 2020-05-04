@@ -29,6 +29,7 @@ Other services will include:
 
 ### Locally
 ```bash
+cd Sweatometer
 dotnet run
 ```
 
@@ -36,7 +37,7 @@ dotnet run
 ```bash
 cd Sweatometer
 docker build -t sweatometer .
-docker run sweatometer:latestß
+docker run sweatometer:latest
 ```
 
 ## To-dos

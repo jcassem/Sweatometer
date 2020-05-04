@@ -41,6 +41,9 @@ export class NavMenu extends Component {
                 <NavItem>
                     <NavLink tag={Link} className="text-dark" to="/sweat">Sweat Test</NavLink>
                 </NavItem>
+                <NavItem>
+                    <NavLink tag={Link} className="text-dark" to="/emoji">Emoji</NavLink>
+                </NavItem>
               </ul>
             </Collapse>
           </Container>

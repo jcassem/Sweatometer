@@ -36,5 +36,13 @@ namespace Sweatometer.Service
         /// <param name="toSuggestFrom">Word/Partial word to search against.</param>
         /// <returns>Collection of words suggestions based off the one provided.</returns>
         Task<ICollection<SimilarWord>> GetSuggestedWordsAsync(string toSuggestFrom);
+
+        /// <summary>
+        /// Returns a collection of "Triggers" words that are statistically associated with 
+        /// the query word in the same piece of text.
+        /// </summary>
+        /// <param name="toRelateFrom">Word to search against.</param>
+        /// <returns>Collection of words that are related to the one provided.</returns>
+        Task<ICollection<SimilarWord>> GetRelatedTriggerWords(string toRelateFrom);
     }
 }
