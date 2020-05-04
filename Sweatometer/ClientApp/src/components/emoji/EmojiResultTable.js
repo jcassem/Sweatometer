@@ -4,6 +4,8 @@ export class EmojiResultTable extends Component {
 
     static searchWordName = "Search Word";
 
+    static emojiWordsToIgnore = ["of", "the", "a", "and"];
+
     constructor(state) {
         super(state);
         this.state = {
@@ -72,13 +74,15 @@ export class EmojiResultTable extends Component {
 
         var combinedFirstResult = "";
         Object.keys(emojisSet).map((key, i) => {
-            var proposedEmojiOrWord = key;
+            if(!EmojiResultTable.emojiWordsToIgnore.includes(key.toLowerCase())){
+                var proposedEmojiOrWord = key;
 
-            if(emojisSet[key] != null && emojisSet[key][0]){
-                proposedEmojiOrWord = emojisSet[key][0].icon + " ";
+                if(emojisSet[key] != null && emojisSet[key][0] != null){
+                    proposedEmojiOrWord = emojisSet[key][0].icon + " ";
+                }
+    
+                combinedFirstResult += proposedEmojiOrWord + " ";
             }
-            
-            combinedFirstResult += proposedEmojiOrWord + " ";
         });
 
         return (
