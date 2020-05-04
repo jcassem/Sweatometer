@@ -5,7 +5,7 @@
         /// <summary>
         /// Whether the merge method should consider synonyms of the inject word.
         /// </summary>
-        public bool CheckSynonyms { get; set; } = true;
+        public bool CheckSynonymsOfInjectWord { get; set; } = true;
 
         /// <summary>
         /// Whether the merge method should consider synonyms of the parent word.

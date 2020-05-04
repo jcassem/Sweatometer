@@ -28,7 +28,14 @@ namespace Sweatometer
             providedAnswer = providedAnswer.ToLower();
             SweatTestResult result = new SweatTestResult();
 
-            var foundOptions = await mergeService.FindMergeWords(parentWord, injectWord);
+            var foundOptions = await mergeService.MergeWords(
+                parentWord, 
+                injectWord,
+                false,
+                true,
+                false
+            );
+            
             NormaliseScores(foundOptions);
 
             result.Alternatives = foundOptions.Where(x => x.Word != providedAnswer).ToList();

@@ -12,7 +12,7 @@ namespace Sweatometer.Service
         /// <summary>
         /// Generates a collection of variations of the <code>parentWord</code>
         /// with the <code>injectWord</code> (or a similar verison of it) inserted within it.
-        /// This collection may contain one or more element depending on config.
+        /// Uses application defaults for merge search configuration.
         /// </summary>
         /// <param name="parentWord">Word to inject into.</param>
         /// <param name="injectWord">Word to inject.</param>
@@ -20,21 +20,22 @@ namespace Sweatometer.Service
         Task<ICollection<MergedWord>> MergeWords(string parentWord, string injectWord);
 
         /// <summary>
-        /// Finds the best merge word from the <code>parentWord</code> with <code>injectWord</code>
-        /// (or a similar verison of it) inserted within it.
-        /// </summary>
-        /// <param name="parentWord">Word to inject into.</param>
-        /// <param name="injectWord">Word to inject.</param>
-        /// <returns>Best merge word.</returns>
-        Task<ICollection<MergedWord>> FindBestMergeWord(string parentWord, string injectWord);
-
-        /// <summary>
         /// Generates a collection of variations of the <code>parentWord</code>
-        /// with the <code>injectWord</code> (or a similar verison of it) inserted within it.
+        /// with the <code>injectWord</code> (or a similar verison of it) inserted within it 
+        /// with custom merge search configuration.
         /// </summary>
         /// <param name="parentWord">Word to inject into.</param>
         /// <param name="injectWord">Word to inject.</param>
+        /// <param name="returnOnFirstResult">Return on the first result or continue to find them all.</param>
+        /// <param name="checkSynonymsOfInjectWord">Include synonyms of injected word in merge search.</param>
+        /// <param name="checkSynonymsOfParentWord">Include synonyms of parent word in merge search.</param>
         /// <returns>Collection of merged words.</returns>
-        Task<ICollection<MergedWord>> FindMergeWords(string parentWord, string injectWord);
+        Task<ICollection<MergedWord>> MergeWords(
+            string parentWord, 
+            string injectWord,
+            bool returnOnFirstResult,
+            bool checkSynonymsOfInjectWord,
+            bool checkSynonymsOfParentWord
+        );
     }
 }
