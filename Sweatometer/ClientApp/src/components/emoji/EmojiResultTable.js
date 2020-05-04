@@ -4,7 +4,7 @@ export class EmojiResultTable extends Component {
 
     static searchWordName = "Search Word";
 
-    static emojiWordsToIgnore = ["of", "the", "a", "and"];
+    static emojiWordsToIgnore = ["of", "the", "a", "and", "in"];
 
     constructor(state) {
         super(state);

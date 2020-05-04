@@ -109,10 +109,8 @@ namespace Sweatometer.Service
                             var replaceEndIndex = replaceStartIndex + wordAttempt.Length;
 
                             var word = parentWordOption.Substring(0, replaceStartIndex)
-                                    + "-" + selectedinjectWord
-                                    + "-" + parentWordOption.Substring(replaceEndIndex);
-                            word = word[0] == '-' ? word.Substring(1) : word;
-                            word = word[word.Length - 1] == '-' ? word.Remove(word.Length - 1, 1) : word;
+                                    + selectedinjectWord
+                                    + parentWordOption.Substring(replaceEndIndex);
 
                             MergedWord match = new MergedWord
                             {

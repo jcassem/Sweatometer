@@ -55,7 +55,8 @@ namespace Sweatometer
         {
             if (options.Contains(candidate))
             {
-                var ratio = candidate.Score / options.Select(x => x.Score).Max();
+                var denominator = options.Select(x => x.Score).Max();
+                var ratio = denominator == 0 ? 0 : candidate.Score / denominator;
 
                 if(ratio >= 0.9)
                 {
