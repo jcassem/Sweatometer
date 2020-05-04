@@ -31,9 +31,9 @@ namespace Sweatometer
             var foundOptions = await mergeService.MergeWords(
                 parentWord, 
                 injectWord,
-                false,
-                true,
-                false
+                ResultSet.ALL_RESULTS,
+                SynonymsOfInjectWord.INCLUDE,
+                SynonymsOfParentWord.EXCLUDE
             );
             
             NormaliseScores(foundOptions);

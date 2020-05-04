@@ -33,9 +33,9 @@ namespace Sweatometer.Service
             return await MergeWords(
                 parentWord, 
                 injectWord,
-                mergeOptions?.Value?.ReturnOnFirstResult == true,
-                mergeOptions?.Value?.CheckSynonymsOfInjectWord == true,
-                mergeOptions?.Value?.CheckSynonymsOfParentWord == true
+                mergeOptions?.Value?.ReturnOnFirstResult == true ? ResultSet.FIRST_RESULT_ONLY : ResultSet.ALL_RESULTS,
+                mergeOptions?.Value?.CheckSynonymsOfInjectWord == true ? SynonymsOfInjectWord.INCLUDE : SynonymsOfInjectWord.EXCLUDE,
+                mergeOptions?.Value?.CheckSynonymsOfParentWord == true ? SynonymsOfParentWord.INCLUDE : SynonymsOfParentWord.EXCLUDE
             );
         }
 
@@ -43,9 +43,9 @@ namespace Sweatometer.Service
         public async Task<ICollection<MergedWord>> MergeWords(
             string parentWord, 
             string injectWord,
-            bool returnOnFirstResult,
-            bool checkSynonymsOfInjectWord,
-            bool checkSynonymsOfParentWord
+            ResultSet returnOnFirstResult,
+            SynonymsOfInjectWord checkSynonymsOfInjectWord,
+            SynonymsOfParentWord checkSynonymsOfParentWord
         )
         {
             var watch = System.Diagnostics.Stopwatch.StartNew();
@@ -67,9 +67,9 @@ namespace Sweatometer.Service
         private async Task<ICollection<MergedWord>> FindMergeWords(
             string parentWord, 
             string injectWord, 
-            bool returnOnFirstResult,
-            bool checkSynonymsOfInjectWord,
-            bool checkSynonymsOfParentWord
+            ResultSet returnOnFirstResult,
+            SynonymsOfInjectWord checkSynonymsOfInjectWord,
+            SynonymsOfParentWord checkSynonymsOfParentWord
 
             )
         {
@@ -82,17 +82,16 @@ namespace Sweatometer.Service
             var injectWords = new List<string>();
             injectWords.Add(injectWord);
 
-            if (checkSynonymsOfInjectWord)//mergeOptions?.Value?.CheckSynonyms == true)
+            if (checkSynonymsOfInjectWord.Equals(SynonymsOfInjectWord.INCLUDE))
             {
                 injectWords.AddRange(await GetFilteredSynonymsOfWord(injectWord));
             }
-
 
             // Create a list of synonyms for the parent word
             var parentWords = new List<string>();
             parentWords.Add(parentWord);
 
-            if (checkSynonymsOfParentWord)
+            if (checkSynonymsOfParentWord.Equals(SynonymsOfParentWord.INCLUDE))
             {
                 parentWords.AddRange(await GetFilteredSynonymsOfWord(parentWord));
             }
@@ -129,7 +128,7 @@ namespace Sweatometer.Service
                             {
                                 mappedPairs.Add(match);
 
-                                if (returnOnFirstResult)
+                                if (returnOnFirstResult.Equals(ResultSet.FIRST_RESULT_ONLY))
                                 {
                                     return mappedPairs;
                                 }

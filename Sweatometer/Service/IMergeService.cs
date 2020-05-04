@@ -33,9 +33,9 @@ namespace Sweatometer.Service
         Task<ICollection<MergedWord>> MergeWords(
             string parentWord, 
             string injectWord,
-            bool returnOnFirstResult,
-            bool checkSynonymsOfInjectWord,
-            bool checkSynonymsOfParentWord
+            ResultSet returnOnFirstResult,
+            SynonymsOfInjectWord checkSynonymsOfInjectWord,
+            SynonymsOfParentWord checkSynonymsOfParentWord
         );
     }
 }
