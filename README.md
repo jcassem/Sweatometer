@@ -37,7 +37,7 @@ dotnet run
 ```bash
 cd Sweatometer
 docker build -t sweatometer .
-docker run sweatometer:latest
+docker run -it -p 8080:80 sweatometer:latest
 ```
 
 ## To-dos
