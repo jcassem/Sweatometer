@@ -67,6 +67,11 @@ jobs:
     if: github.event_name == 'push'
 
     steps:
+      - uses: actions/checkout@master
+        with:
+          # Fetches entire history, so we can analyze commits since last tag
+          fetch-depth: 0
+
       - uses: actions/checkout@v2
 
       - name: Build image
@@ -97,3 +102,9 @@ jobs:
 
           docker tag $IMAGE_NAME $IMAGE_ID:$VERSION
           docker push $IMAGE_ID:$VERSION
+
+      - name: Bump version and push tag
+        uses: anothrNick/github-tag-action@master
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          CUSTOM_TAG: latest
