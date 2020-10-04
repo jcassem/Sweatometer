@@ -11,10 +11,15 @@ how sweaty it is.
 This service is reliant on the [Data Muse API](http://www.datamuse.com/api), which provides a series 
 of word services.
 
+A Docker image is in the [Github package repository](https://github.com/users/RichTeaMan/packages/container/package/sweatometer):
+
+```bash
+sudo docker run -d -p 8080:80 ghcr.io/richteaman/sweatometer
+```
 
 ## Technology
 
-This project uses .NET Core and React.
+This project uses .NET Core and React. A Github action pipeline runs builds and publishes Docker images.
 
 
 ## Services
@@ -28,16 +33,18 @@ Other services will include:
 ## Running
 
 ### Locally
+
 ```bash
 cd Sweatometer
 dotnet run
 ```
 
 ### Via Docker
+
 ```bash
 cd Sweatometer
 docker build -t sweatometer .
-docker run sweatometer:latest
+docker run -it -p 8080:80 sweatometer:latest
 ```
 
 ## To-dos
