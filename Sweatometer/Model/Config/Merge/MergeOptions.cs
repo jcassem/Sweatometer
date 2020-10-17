@@ -20,7 +20,7 @@
         /// <summary>
         /// Minimum score for synonyms to be considered. Others will be ignored/discarded.
         /// </summary>
-        public int MinimumMeanScoreForSynoymns { get; set; } = 70000;
+        public int MinScoreForSynoymns { get; set; } = 70000;
 
         /// <summary>
         /// Maximum words to consider that have a similar meaning to the inject word.

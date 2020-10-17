@@ -31,6 +31,7 @@ namespace Sweatometer
             });
 
             services.Configure<MergeOptions>(Configuration.GetSection("MergeOptions"));
+            services.Configure<EmojiRelatedWordOptions>(Configuration.GetSection("EmojiRelatedWordOptions"));
 
             services.AddScoped<IWordFinderService, WordFinderService>();
             services.AddScoped<IMergeService, MergeService>();
