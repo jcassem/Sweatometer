@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Sweatometer.Service;
 using System.Threading;
+using Microsoft.Extensions.Options;
 
 namespace Sweatometer
 {
@@ -24,8 +25,14 @@ namespace Sweatometer
 
         private readonly IWordFinderService wordFinderService;
 
-        public EmojiLoader(IWordFinderService wordFinderService){
+        private readonly IOptions<EmojiRelatedWordOptions> emojiRelatedWordOptions;
+
+        public EmojiLoader(
+            IWordFinderService wordFinderService,
+            IOptions<EmojiRelatedWordOptions> emojiRelatedWordOptions
+        ){
             this.wordFinderService = wordFinderService;
+            this.emojiRelatedWordOptions = emojiRelatedWordOptions;
         }
 
         public  void LoadEmojis()
@@ -56,22 +63,44 @@ namespace Sweatometer
 
         private async Task AddRelatedWords(){
             var initialKeys = new List<string>(emojiDictionary.Keys);
-
             int sum = initialKeys.Count;
             int count = 0;
-            
+            bool includeSynonyms = emojiRelatedWordOptions?.Value?.MaxAmountSynonyms > 0 == true;
+            bool includeRelatedWords = emojiRelatedWordOptions?.Value?.MaxAmountRelatedWords > 0 == true;
+            int minScoreForSynonyms = emojiRelatedWordOptions?.Value?.MinScoreForSynoymns ?? 0;
+            int minScoreForRetaltedWords = emojiRelatedWordOptions?.Value?.MinScoreForRelatedWords ?? 0;
+
             foreach(var key in initialKeys)
             {
                 var emojis = emojiDictionary[key];
-                var relatedWords =  await wordFinderService.GetRelatedTriggerWords(key);
+                
+                if(includeSynonyms){
+                    var foundWords =  await wordFinderService.GetWordsToMeanLikeAsync(key);
 
-                if(relatedWords != null){
-                    var topTenRelatedWords = relatedWords
-                        .OrderByDescending(s => s.Score)
-                        .Take(10);
+                    if(foundWords != null){
+                        var topResults = foundWords
+                            .Where(x => x.Score >= minScoreForSynonyms)
+                            .OrderByDescending(s => s.Score)
+                            .Take(emojiRelatedWordOptions?.Value?.MaxAmountSynonyms ?? 10);
 
-                    foreach(var relatedWord in topTenRelatedWords){
-                        AddToEmojiDictionary(relatedWord.Word, emojis);
+                        foreach(var relatedWord in topResults){
+                            AddToEmojiDictionary(relatedWord.Word, emojis);
+                        }
+                    }
+                }
+
+                if(includeRelatedWords){
+                    var foundWords =  await wordFinderService.GetRelatedTriggerWords(key);
+
+                    if(foundWords != null){
+                        var topResults = foundWords
+                            .Where(x => x.Score >= minScoreForRetaltedWords)
+                            .OrderByDescending(s => s.Score)
+                            .Take(emojiRelatedWordOptions?.Value?.MaxAmountRelatedWords ?? 10);
+
+                        foreach(var relatedWord in topResults){
+                            AddToEmojiDictionary(relatedWord.Word, emojis);
+                        }
                     }
                 }
                 

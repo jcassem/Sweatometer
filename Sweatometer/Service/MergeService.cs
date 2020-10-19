@@ -151,7 +151,7 @@ namespace Sweatometer.Service
             var synonyms = await wordFinderService.GetWordsToMeanLikeAsync(sourceWord);
 
             return synonyms
-                .Where(s => s.Score > mergeOptions.Value.MinimumMeanScoreForSynoymns)
+                .Where(s => s.Score > mergeOptions.Value.MinScoreForSynoymns)
                 .OrderByDescending(s => s.Score)
                 .Take(mergeOptions.Value.MaxWordsToMeanLike)
                 .Select(s => s.Word)
