@@ -25,9 +25,16 @@ namespace Sweatometer {
         }
 
         private static ConcurrentDictionary<string, List<SimilarWord>> relatedWordsForEmojiDictionary { get; set; }
-        public static ConcurrentDictionary<string, List<string>> RelatedWordsForEmojiDictionary {
+        public static ConcurrentDictionary<string, List<SimilarWord>> RelatedWordsForEmojiDictionary {
             get {
-                return emojiDictionary;
+                return relatedWordsForEmojiDictionary;
+            }
+        }
+
+        private static ConcurrentDictionary<string, string> keyLookupDictionaryForRelatedWords { get; set; }
+        public static ConcurrentDictionary<string, string> KeyLookupDictionaryForRelatedWords {
+            get {
+                return keyLookupDictionaryForRelatedWords;
             }
         }
 
@@ -46,6 +53,7 @@ namespace Sweatometer {
         public void LoadEmojis() {
             LoadEmojisFromFile();
             LoadEmojiRelatedWordsFromFile();
+            GenerateRevereseWordLookupDictionary();
         }
 
         private static void LoadEmojisFromFile() {
@@ -84,16 +92,46 @@ namespace Sweatometer {
             }
         }
 
-        private void persistRelatedWordDictionaryToJsonFile(string filePath) {
-            string json = JsonConvert.SerializeObject(relatedWordsForEmojiDictionary, Formatting.Indented);
+        private static void GenerateRevereseWordLookupDictionary() {
+            if(keyLookupDictionaryForRelatedWords == null){
+                var relatedWordReverseLookup = new ConcurrentDictionary<string, string>();
 
-            File.WriteAllText(filePath, json);
+                foreach(var relatedWordKey in relatedWordsForEmojiDictionary.Keys){
+                    var relatedWords = relatedWordsForEmojiDictionary[relatedWordKey];
+                    foreach(var relatedWord in relatedWords){
+                        var reverseWordKey = relatedWord.Word;
+                        var reverseWordValue = relatedWordKey;
+
+                        if(relatedWordReverseLookup.ContainsKey(reverseWordKey)){
+                            // replace it if the Score is larger
+                            var existingRelatedWordKey = relatedWordReverseLookup[reverseWordKey];
+                            var existingSimilarWords = relatedWordsForEmojiDictionary[existingRelatedWordKey];
+                            var clashingSimilarWord = existingSimilarWords.Where(x => x.Word.Equals(reverseWordKey)).First();
+                            if(clashingSimilarWord.Score < relatedWord.Score){
+                                relatedWordReverseLookup.TryUpdate(reverseWordKey, reverseWordValue, clashingSimilarWord.Word);   
+                            }
+                        }
+                        else {
+                            relatedWordReverseLookup.TryAdd(reverseWordKey, reverseWordValue);
+                        }
+                    }
+                }
+                Console.Write("shutter:" + relatedWordReverseLookup["shutter"]);
+                keyLookupDictionaryForRelatedWords = relatedWordReverseLookup;
+            }
         }
 
         public async Task AddRelatedWordsToEmojiDictionary() {
             await CreateRelatedWordsDictionary();
             Console.WriteLine("Writing related words to file.");
-            persistRelatedWordDictionaryToJsonFile(EMOJI_RELATED_WORDS_JSON_FILE_PATH);
+            PersistRelatedWordDictionaryToJsonFile(EMOJI_RELATED_WORDS_JSON_FILE_PATH);
+        }
+
+        private void PersistRelatedWordDictionaryToJsonFile(string filePath) {
+            string json = JsonConvert.SerializeObject(relatedWordsForEmojiDictionary, Formatting.Indented);
+            Console.WriteLine("Saving json (of length " + json.Length + ") to: " + filePath);
+            File.WriteAllText(filePath, json);
+            Console.WriteLine("Saved");
         }
 
         public async Task CreateRelatedWordsDictionary() {

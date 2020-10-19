@@ -41,7 +41,7 @@ namespace Sweatometer
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public async void Configure(IApplicationBuilder app, IWebHostEnvironment env, IEmojiLoader emojiLoader)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IEmojiLoader emojiLoader)
         {
             if (env.IsDevelopment())
             {
@@ -77,9 +77,7 @@ namespace Sweatometer
             });
 
             emojiLoader.LoadEmojis();
-
-            // uncomment to regenerate emojiFull.json
-            await emojiLoader.AddRelatedWordsToEmojiDictionary();
+            // await emojiLoader.AddRelatedWordsToEmojiDictionary();
         }
     }
 }

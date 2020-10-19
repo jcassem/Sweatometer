@@ -40,9 +40,27 @@ namespace Sweatometer
             var keys = EmojiLoader.EmojiDictionary.Keys;
 
             await Task.Run(() => {
-                var matchedKeys = keys.Where(key => key.ToLower().Equals(searchTerm.ToLower())).ToList();
-                matchedKeys.AddRange(keys.Where(key => WholeWordSearch(key, searchTerm) && !matchedKeys.Contains(key)));
-                matchedKeys.AddRange(keys.Where(key => ContainsAllWords(key, searchTerm) && !matchedKeys.Contains(key)));
+                var matchedKeys = new List<string>();
+                matchedKeys.AddRange(FindMatchesForSearchTermIn(searchTerm, keys));
+
+
+                // search related words if none found
+                if(!matchedKeys.Any()){
+                    foreach(var relatedWordKey in EmojiLoader.RelatedWordsForEmojiDictionary.Keys){
+                        var relatedWords = EmojiLoader.RelatedWordsForEmojiDictionary[relatedWordKey];
+                        var relatedWordMatches = FindMatchesForSearchTermIn(searchTerm, relatedWords.Select(sw => sw.Word).ToList());
+                        if(relatedWordMatches.Any()){
+                            matchedKeys.Add(relatedWordKey);
+                        }
+                    }
+
+                    // todo replace with reverse key lookup for performance increase
+                    // var matchedRelatedKeys = FindMatchesForSearchTermIn(searchTerm, EmojiLoader.KeyLookupDictionaryForRelatedWords.Keys);
+                    // var matchedRelatedWords = EmojiLoader.RelatedWordsForEmojiDictionary.Where(x => matchedRelatedKeys.Contains(x.Key));
+                    // foreach(var matchedWord in matchedRelatedWords){
+                    //     matchedKeys.Add(matchedWord.Key);
+                    // }
+                }
                 
                 if (matchedKeys.Any())
                 {
@@ -67,6 +85,19 @@ namespace Sweatometer
             });            
 
             return emojis;
+        }
+
+        /// <summary>
+        /// Searches for whole or partial word matches for <paramref name="searchTerm"/> in <paramref name="toSearchIn"/>.
+        /// </summary>
+        /// <param name="searchTerm">Search term to look for.</param>
+        /// <param name="toSearchIn">Collection of words to look in.</param>
+        /// <returns>Matched entries from collection.</returns>
+        public static List<string> FindMatchesForSearchTermIn(string searchTerm, ICollection<string> toSearchIn){
+            var matchedKeys = toSearchIn.Where(key => key.ToLower().Equals(searchTerm.ToLower())).ToList();
+            matchedKeys.AddRange(toSearchIn.Where(key => WholeWordSearch(key, searchTerm) && !matchedKeys.Contains(key)));
+            matchedKeys.AddRange(toSearchIn.Where(key => ContainsAllWords(key, searchTerm) && !matchedKeys.Contains(key)));
+            return matchedKeys;
         }
 
         /// <summary>
