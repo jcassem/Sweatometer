@@ -20,6 +20,7 @@ namespace Sweatometer.Service
         public static readonly string DATAMUSE_MEANS_LIKE_API = "https://api.datamuse.com/words?ml=";
 
         public static readonly string DATAMUSE_RELATED_TRIGGER_API = "https://api.datamuse.com/words?rel_trg=";
+        
         public static readonly string DATAMUSE_SUGGEST_API = "https://api.datamuse.com/sug?s=";
 
         private static readonly HttpClient client = new HttpClient();

@@ -15,6 +15,8 @@ namespace Sweatometer.Model
         [JsonProperty("numSyllables")]
         public long NumSyllables { get; set; }
 
+        public SimilarWordType Type {get; set;}
+
         public SimilarWord() { }
 
         public SimilarWord(string Word, long Score, long NumSyllables = -1)
@@ -45,5 +47,12 @@ namespace Sweatometer.Model
                 .Append($"{nameof(NumSyllables)}: {NumSyllables}")
                 .ToString();
         }
+    }
+
+    public enum SimilarWordType {
+        SOUNDS_LIKE,
+        MEANS_LIKE,
+        SPELLS_LIKE,
+        RELATED
     }
 }

@@ -79,7 +79,7 @@ namespace Sweatometer
             emojiLoader.LoadEmojis();
 
             // uncomment to regenerate emojiFull.json
-            // await emojiLoader.AddRelatedWordsToEmojiDictionaryAsync();
+            await emojiLoader.AddRelatedWordsToEmojiDictionary();
         }
     }
 }

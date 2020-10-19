@@ -6,6 +6,6 @@ namespace Sweatometer
     {
         void LoadEmojis();
 
-        Task AddRelatedWordsToEmojiDictionaryAsync();
+        Task AddRelatedWordsToEmojiDictionary();
     }
 }
