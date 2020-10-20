@@ -12,9 +12,10 @@ namespace Sweatometer.Model
         [JsonProperty("score")]
         public long Score { get; set; }
 
-        [JsonProperty("numSyllables")]
-        public long NumSyllables { get; set; }
+        [JsonProperty("numberOfSyllables")]
+        public long NumberOfSyllabels { get; set; }
 
+        [JsonProperty("similarWordType")]
         public SimilarWordType Type {get; set;}
 
         public SimilarWord() { }
@@ -23,7 +24,7 @@ namespace Sweatometer.Model
         {
             this.Word = Word;
             this.Score = Score;
-            this.NumSyllables = NumSyllables;
+            this.NumberOfSyllabels = NumSyllables;
         }
 
         public override bool Equals(object obj)
@@ -31,12 +32,12 @@ namespace Sweatometer.Model
             return obj is SimilarWord word &&
                    Word == word.Word &&
                    Score == word.Score &&
-                   NumSyllables == word.NumSyllables;
+                   NumberOfSyllabels == word.NumberOfSyllabels;
         }
 
         public override int GetHashCode()
         {
-            return HashCode.Combine(Word, Score, NumSyllables);
+            return HashCode.Combine(Word, Score, NumberOfSyllabels);
         }
 
         public override string ToString()
@@ -44,7 +45,7 @@ namespace Sweatometer.Model
             return new StringBuilder()
                 .Append($"{nameof(Word)}: {Word} ")
                 .Append($"{nameof(Score)}: {Score} ")
-                .Append($"{nameof(NumSyllables)}: {NumSyllables}")
+                .Append($"{nameof(NumberOfSyllabels)}: {NumberOfSyllabels}")
                 .ToString();
         }
     }

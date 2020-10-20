@@ -46,20 +46,13 @@ namespace Sweatometer
 
                 // search related words if none found
                 if(!matchedKeys.Any()){
-                    foreach(var relatedWordKey in EmojiLoader.RelatedWordsForEmojiDictionary.Keys){
-                        var relatedWords = EmojiLoader.RelatedWordsForEmojiDictionary[relatedWordKey];
-                        var relatedWordMatches = FindMatchesForSearchTermIn(searchTerm, relatedWords.Select(sw => sw.Word).ToList());
-                        if(relatedWordMatches.Any()){
-                            matchedKeys.Add(relatedWordKey);
+                    var keyOptions = FindMatchesForSearchTermIn(searchTerm, EmojiLoader.RelatedWordsToEmojiDictionaryKeysDictionary.Keys);
+                    foreach(var key in keyOptions){
+                        var relatedWordsEmojiKeyOptions = EmojiLoader.RelatedWordsToEmojiDictionaryKeysDictionary[key];
+                        if(relatedWordsEmojiKeyOptions.Any()){
+                            matchedKeys.AddRange(relatedWordsEmojiKeyOptions);
                         }
                     }
-
-                    // todo replace with reverse key lookup for performance increase
-                    // var matchedRelatedKeys = FindMatchesForSearchTermIn(searchTerm, EmojiLoader.KeyLookupDictionaryForRelatedWords.Keys);
-                    // var matchedRelatedWords = EmojiLoader.RelatedWordsForEmojiDictionary.Where(x => matchedRelatedKeys.Contains(x.Key));
-                    // foreach(var matchedWord in matchedRelatedWords){
-                    //     matchedKeys.Add(matchedWord.Key);
-                    // }
                 }
                 
                 if (matchedKeys.Any())

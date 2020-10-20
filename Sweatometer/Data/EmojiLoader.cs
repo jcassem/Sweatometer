@@ -24,17 +24,13 @@ namespace Sweatometer {
             }
         }
 
-        private static ConcurrentDictionary<string, List<SimilarWord>> relatedWordsForEmojiDictionary { get; set; }
-        public static ConcurrentDictionary<string, List<SimilarWord>> RelatedWordsForEmojiDictionary {
-            get {
-                return relatedWordsForEmojiDictionary;
-            }
-        }
+        private static ConcurrentDictionary<string, List<SimilarWord>> relatedWordsDictionary { get; set; }
 
-        private static ConcurrentDictionary<string, string> keyLookupDictionaryForRelatedWords { get; set; }
-        public static ConcurrentDictionary<string, string> KeyLookupDictionaryForRelatedWords {
+
+        private static ConcurrentDictionary<string, List<string>> relatedWordsToEmojiDictionaryKeysDictionary { get; set; }
+        public static ConcurrentDictionary<string, List<string>> RelatedWordsToEmojiDictionaryKeysDictionary {
             get {
-                return keyLookupDictionaryForRelatedWords;
+                return relatedWordsToEmojiDictionaryKeysDictionary;
             }
         }
 
@@ -53,7 +49,7 @@ namespace Sweatometer {
         public void LoadEmojis() {
             LoadEmojisFromFile();
             LoadEmojiRelatedWordsFromFile();
-            GenerateRevereseWordLookupDictionary();
+            GenerateRelatedWordsToEmojiDictionaryKeysDictionary();
         }
 
         private static void LoadEmojisFromFile() {
@@ -65,7 +61,7 @@ namespace Sweatometer {
                 }
             }
             catch(FileNotFoundException){
-                // ignore
+                // ignore for now
             }
             finally{
                 if(emojiDictionary == null){
@@ -79,45 +75,49 @@ namespace Sweatometer {
                 var jsonRaw = File.ReadAllText(EMOJI_RELATED_WORDS_JSON_FILE_PATH);
                 var values = JsonConvert.DeserializeObject<ConcurrentDictionary<string, List<SimilarWord>>>(jsonRaw);
                 if (values != null) {
-                    relatedWordsForEmojiDictionary = values;
+                    relatedWordsDictionary = values;
                 }
             }
             catch(FileNotFoundException){
-                // ignore
+                // ignore for now
             }
             finally{
-                if(relatedWordsForEmojiDictionary == null){
-                    relatedWordsForEmojiDictionary = new ConcurrentDictionary<string, List<SimilarWord>>();
+                if(relatedWordsDictionary == null){
+                    relatedWordsDictionary = new ConcurrentDictionary<string, List<SimilarWord>>();
                 }
             }
         }
 
-        private static void GenerateRevereseWordLookupDictionary() {
-            if(keyLookupDictionaryForRelatedWords == null){
-                var relatedWordReverseLookup = new ConcurrentDictionary<string, string>();
+        private static void GenerateRelatedWordsToEmojiDictionaryKeysDictionary() {
+            if(RelatedWordsToEmojiDictionaryKeysDictionary == null){
+                var relatedWordReverseLookup = new ConcurrentDictionary<string, List<string>>();
 
-                foreach(var relatedWordKey in relatedWordsForEmojiDictionary.Keys){
-                    var relatedWords = relatedWordsForEmojiDictionary[relatedWordKey];
+                foreach(var relatedWordKey in relatedWordsDictionary.Keys){
+                    var relatedWords = relatedWordsDictionary[relatedWordKey];
                     foreach(var relatedWord in relatedWords){
                         var reverseWordKey = relatedWord.Word;
                         var reverseWordValue = relatedWordKey;
 
                         if(relatedWordReverseLookup.ContainsKey(reverseWordKey)){
                             // replace it if the Score is larger
-                            var existingRelatedWordKey = relatedWordReverseLookup[reverseWordKey];
-                            var existingSimilarWords = relatedWordsForEmojiDictionary[existingRelatedWordKey];
-                            var clashingSimilarWord = existingSimilarWords.Where(x => x.Word.Equals(reverseWordKey)).First();
-                            if(clashingSimilarWord.Score < relatedWord.Score){
-                                relatedWordReverseLookup.TryUpdate(reverseWordKey, reverseWordValue, clashingSimilarWord.Word);   
+                            var existingRelatedWords = relatedWordReverseLookup[reverseWordKey];
+                            if(existingRelatedWords == null){
+                                existingRelatedWords = new List<string>();
+                            }
+                            if(!existingRelatedWords.Contains(reverseWordValue)){
+                                existingRelatedWords.Add(reverseWordValue);
+                                relatedWordReverseLookup.TryUpdate(reverseWordKey, existingRelatedWords, existingRelatedWords);
                             }
                         }
                         else {
-                            relatedWordReverseLookup.TryAdd(reverseWordKey, reverseWordValue);
+                            relatedWordReverseLookup.TryAdd(reverseWordKey, new List<string>{reverseWordValue});
                         }
                     }
                 }
+
                 Console.Write("shutter:" + relatedWordReverseLookup["shutter"]);
-                keyLookupDictionaryForRelatedWords = relatedWordReverseLookup;
+                
+                relatedWordsToEmojiDictionaryKeysDictionary = relatedWordReverseLookup;
             }
         }
 
@@ -128,7 +128,7 @@ namespace Sweatometer {
         }
 
         private void PersistRelatedWordDictionaryToJsonFile(string filePath) {
-            string json = JsonConvert.SerializeObject(relatedWordsForEmojiDictionary, Formatting.Indented);
+            string json = JsonConvert.SerializeObject(relatedWordsDictionary, Formatting.Indented);
             Console.WriteLine("Saving json (of length " + json.Length + ") to: " + filePath);
             File.WriteAllText(filePath, json);
             Console.WriteLine("Saved");
@@ -156,7 +156,7 @@ namespace Sweatometer {
                 }
 
                 if (relatedWords.Any()) {
-                    AddToEmojiRelatedWords(key, relatedWords);
+                    AddToRelatedWordsDictionary(key, relatedWords);
                 }
 
                 count++;
@@ -165,48 +165,50 @@ namespace Sweatometer {
         }
 
         private async Task<List<SimilarWord>> FindTopSynonymsFor(string searchTerm) {
-            int minScoreForSynonyms = emojiRelatedWordOptions?.Value?.MinScoreForSynoymns ?? 0;
+            int minScore = emojiRelatedWordOptions?.Value?.MinScoreForSynoymns ?? 0;
             var foundWords = await wordFinderService.GetWordsToMeanLikeAsync(searchTerm);
 
             var topResults = foundWords
-                .Where(x => x.Score >= minScoreForSynonyms)
+                .Where(x => x.Score >= minScore)
                 .OrderByDescending(s => s.Score)
                 .Take(emojiRelatedWordOptions?.Value?.MaxAmountSynonyms ?? TOP_RESULTS_AMOUNT)
                 .ToList();
 
             foreach (var relatedWord in topResults) {
                 relatedWord.Type = SimilarWordType.MEANS_LIKE;
+                relatedWord.Score = (relatedWord.Score*100)/minScore;
             }
 
             return topResults;
         }
 
         private async Task<List<SimilarWord>> FindTopRelatedWordsFor(string searchTerm) {
-            int minScoreForRetaltedWords = emojiRelatedWordOptions?.Value?.MinScoreForRelatedWords ?? 0;
+            int minScore = emojiRelatedWordOptions?.Value?.MinScoreForRelatedWords ?? 0;
             var foundWords = await wordFinderService.GetRelatedTriggerWords(searchTerm);
 
             var topResults = foundWords
-                .Where(x => x.Score >= minScoreForRetaltedWords)
+                .Where(x => x.Score >= minScore)
                 .OrderByDescending(s => s.Score)
                 .Take(emojiRelatedWordOptions?.Value?.MaxAmountRelatedWords ?? TOP_RESULTS_AMOUNT)
                 .ToList();
 
             foreach (var relatedWord in topResults) {
                 relatedWord.Type = SimilarWordType.RELATED;
+                relatedWord.Score = (relatedWord.Score*100)/minScore;
             }
 
             return topResults;
         }
 
-        private static void AddToEmojiRelatedWords(string key, List<SimilarWord> relatedWords) {
-            if (relatedWordsForEmojiDictionary.ContainsKey(key)) {
-                var currentWords = relatedWordsForEmojiDictionary[key].ToList();
+        private static void AddToRelatedWordsDictionary(string key, List<SimilarWord> relatedWords) {
+            if (relatedWordsDictionary.ContainsKey(key)) {
+                var currentWords = relatedWordsDictionary[key].ToList();
 
                 currentWords.AddRange(relatedWords.Except(currentWords));
-                relatedWordsForEmojiDictionary.TryUpdate(key, currentWords, currentWords);
+                relatedWordsDictionary.TryUpdate(key, currentWords, currentWords);
             }
             else {
-                relatedWordsForEmojiDictionary.TryAdd(key, relatedWords);
+                relatedWordsDictionary.TryAdd(key, relatedWords);
             }
         }
     }
