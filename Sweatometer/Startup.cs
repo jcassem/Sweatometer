@@ -43,10 +43,11 @@ namespace Sweatometer
 
         /// <summary>
         /// This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
+        /// This method may also re-generate the emoji data it requires (in development).
         /// </summary>
         /// <param name="app"></param>
         /// <param name="env"></param>
-        /// <param name="emojiDataGenerator"></param>
+        /// <param name="emojiDataGenerator">Emoji data generator.</param>
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IEmojiDataGenerator emojiDataGenerator)
         {
             if (env.IsDevelopment())
@@ -83,8 +84,11 @@ namespace Sweatometer
             });
 
             EmojiDataLoader.LoadEmojiDataFromFile();
-            // NB Inject a EmojiDataGenerator instance into this method to re-generate data here.
-            // emojiDataGenerator.CreateRelatedWordsDictionary();
+            if (env.IsDevelopment())
+            {
+                // Uncomment to regenerate related words dictionary (this takes around 10 minutes)
+                // emojiDataGenerator.GenerateRelatedWordsDictionaryFile();
+            }
         }
     }
 }
