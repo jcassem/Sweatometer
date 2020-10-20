@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using Sweatometer.Model;
-using Sweatometer.Service;
+using Sweatometer.Service.Word;
 
 namespace Sweatometer.Data.Emoji {
 

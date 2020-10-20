@@ -5,7 +5,10 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Sweatometer.Model;
-using Sweatometer.Service;
+using Sweatometer.Service.EmojiSearch;
+using Sweatometer.Service.Merge;
+using Sweatometer.Service.SweatTest;
+using Sweatometer.Service.Word;
 
 namespace Sweatometer
 {

@@ -1,14 +1,12 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Sweatometer.Model;
 
-namespace Sweatometer.Service
-{
+namespace Sweatometer.Service.Word {
     /// <summary>
     /// Provides services to retreive related words using the DataMuse api.
     /// </summary>
-    public interface IWordFinderService
-    {
+    public interface IWordFinderService {
         /// <summary>
         /// Returns a collection of words that sound similar to the one provided.
         /// </summary>

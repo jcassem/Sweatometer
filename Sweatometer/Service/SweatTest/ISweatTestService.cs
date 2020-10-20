@@ -1,14 +1,12 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Sweatometer.Model;
 
-namespace Sweatometer.Service
-{
+namespace Sweatometer.Service.SweatTest {
     /// <summary>
     /// Provides services to merge words.
     /// </summary>
-    public interface ISweatTestService
-    {
+    public interface ISweatTestService {
         /// <summary>
         /// Produces a numerical score /100 of the sweatiness of the provided word combination.
         /// </summary>

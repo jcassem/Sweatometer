@@ -22,16 +22,6 @@
 
   <ItemGroup>
     <None Remove="ClientApp\README.md" />
-    <None Remove="ClientApp\src\components\FindApp.js~" />
-    <None Remove="ClientApp\src\components\SweatMerge.js~" />
-    <None Remove="ClientApp\src\components\Merge.js~" />
-    <None Remove="ClientApp\src\components\FindForm.js~" />
-    <None Remove="ClientApp\src\components\MergeApp.js~" />
-    <None Remove="ClientApp\src\components\MergeForm.js~" />
-    <None Remove="ClientApp\src\components\SweatTestApp.js~" />
-    <None Remove="ClientApp\src\components\SweatTestResult.js~" />
-    <None Remove="ClientApp\src\components\SweatTest.js~" />
-    <None Remove="ClientApp\src\components\SweatTestForm.js~" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Model\Config\" />

@@ -1,7 +1,5 @@
-﻿namespace Sweatometer
-{
-    public class EmojiRelatedWordOptions
-    {
+namespace Sweatometer {
+    public class EmojiRelatedWordOptions {
         /// <summary>
         /// Minimum score for synonyms to be considered.
         /// </summary>

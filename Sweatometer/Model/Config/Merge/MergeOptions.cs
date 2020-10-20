@@ -1,7 +1,5 @@
-﻿namespace Sweatometer
-{
-    public class MergeOptions
-    {
+namespace Sweatometer {
+    public class MergeOptions {
         /// <summary>
         /// Whether the merge method should consider synonyms of the inject word.
         /// </summary>

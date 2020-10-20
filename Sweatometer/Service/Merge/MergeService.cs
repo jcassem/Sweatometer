@@ -1,37 +1,36 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Sweatometer.Model;
+using Sweatometer.Service.Word;
 
-namespace Sweatometer.Service
-{
+namespace Sweatometer.Service.Merge {
     ///<inheritdoc/>
-    public class MergeService : IMergeService
-    {
-        private readonly ILogger<WordFinderService> logger;
+    public class MergeService : IMergeService {
+        private readonly ILogger<MergeService> logger;
 
         private readonly IWordFinderService wordFinderService;
 
         private readonly IOptions<MergeOptions> mergeOptions;
 
+        public IWordFinderService WordFinderService => wordFinderService;
+
         public MergeService(
-            ILogger<WordFinderService> logger,
+            ILogger<MergeService> logger,
             IOptions<MergeOptions> mergeOptions,
-            IWordFinderService wordFinderService)
-        {
+            IWordFinderService wordFinderService) {
             this.logger = logger;
             this.wordFinderService = wordFinderService;
             this.mergeOptions = mergeOptions;
         }
 
         ///<inheritdoc/>
-        public async Task<ICollection<MergedWord>> MergeWords(string parentWord, string injectWord)
-        {
+        public async Task<ICollection<MergedWord>> MergeWords(string parentWord, string injectWord) {
             return await MergeWords(
-                parentWord, 
+                parentWord,
                 injectWord,
                 mergeOptions?.Value?.ReturnOnFirstResult == true ? ResultSet.FIRST_RESULT_ONLY : ResultSet.ALL_RESULTS,
                 mergeOptions?.Value?.CheckSynonymsOfInjectWord == true ? SynonymsOfInjectWord.INCLUDE : SynonymsOfInjectWord.EXCLUDE,
@@ -41,17 +40,16 @@ namespace Sweatometer.Service
 
         ///<inheritdoc/>
         public async Task<ICollection<MergedWord>> MergeWords(
-            string parentWord, 
+            string parentWord,
             string injectWord,
             ResultSet returnOnFirstResult,
             SynonymsOfInjectWord checkSynonymsOfInjectWord,
             SynonymsOfParentWord checkSynonymsOfParentWord
-        )
-        {
+        ) {
             var watch = System.Diagnostics.Stopwatch.StartNew();
 
             var mappedPairs = await FindMergeWords(
-                parentWord, 
+                parentWord,
                 injectWord,
                 returnOnFirstResult,
                 checkSynonymsOfInjectWord,
@@ -65,14 +63,13 @@ namespace Sweatometer.Service
         }
 
         private async Task<ICollection<MergedWord>> FindMergeWords(
-            string parentWord, 
-            string injectWord, 
+            string parentWord,
+            string injectWord,
             ResultSet returnOnFirstResult,
             SynonymsOfInjectWord checkSynonymsOfInjectWord,
             SynonymsOfParentWord checkSynonymsOfParentWord
 
-            )
-        {
+        ) {
             parentWord = parentWord.ToLower();
             injectWord = injectWord.ToLower();
 
@@ -82,8 +79,7 @@ namespace Sweatometer.Service
             var injectWords = new List<string>();
             injectWords.Add(injectWord);
 
-            if (checkSynonymsOfInjectWord.Equals(SynonymsOfInjectWord.INCLUDE))
-            {
+            if (checkSynonymsOfInjectWord.Equals(SynonymsOfInjectWord.INCLUDE)) {
                 injectWords.AddRange(await GetFilteredSynonymsOfWord(injectWord));
             }
 
@@ -91,45 +87,37 @@ namespace Sweatometer.Service
             var parentWords = new List<string>();
             parentWords.Add(parentWord);
 
-            if (checkSynonymsOfParentWord.Equals(SynonymsOfParentWord.INCLUDE))
-            {
+            if (checkSynonymsOfParentWord.Equals(SynonymsOfParentWord.INCLUDE)) {
                 parentWords.AddRange(await GetFilteredSynonymsOfWord(parentWord));
             }
 
             // Go through each inject word option (synonyms) and each of their related words (sounds like, spells like)
-            foreach (var selectedinjectWord in injectWords)
-            {
+            foreach (var selectedinjectWord in injectWords) {
                 var pivotOptions = await GetFilteredSimilarWordsFromWord(selectedinjectWord);
 
                 // Process each similar word option and the word replacements for these words.
-                foreach (var similarWordOption in pivotOptions)
-                {
-                    foreach(string parentWordOption in parentWords)
-                    {
+                foreach (var similarWordOption in pivotOptions) {
+                    foreach (string parentWordOption in parentWords) {
                         foreach (string wordAttempt in FindCommonCharacterReplacements(similarWordOption.Word)
-                                    .Where(w => parentWordOption.Contains(w)))
-                        {
+                            .Where(w => parentWordOption.Contains(w))) {
                             var replaceStartIndex = parentWordOption.IndexOf(wordAttempt, StringComparison.Ordinal);
                             var replaceEndIndex = replaceStartIndex + wordAttempt.Length;
 
-                            var word = parentWordOption.Substring(0, replaceStartIndex)
-                                    + selectedinjectWord
-                                    + parentWordOption.Substring(replaceEndIndex);
+                            var word = parentWordOption.Substring(0, replaceStartIndex) +
+                                selectedinjectWord +
+                                parentWordOption.Substring(replaceEndIndex);
 
-                            MergedWord match = new MergedWord
-                            {
+                            MergedWord match = new MergedWord {
                                 Word = word,
                                 Score = similarWordOption.Score,
                                 InjectedWord = selectedinjectWord,
                                 ParentWord = parentWordOption
                             };
 
-                            if (!mappedPairs.Any(x => x.Word == match.Word))
-                            {
+                            if (!mappedPairs.Any(x => x.Word == match.Word)) {
                                 mappedPairs.Add(match);
 
-                                if (returnOnFirstResult.Equals(ResultSet.FIRST_RESULT_ONLY))
-                                {
+                                if (returnOnFirstResult.Equals(ResultSet.FIRST_RESULT_ONLY)) {
                                     return mappedPairs;
                                 }
                             }
@@ -146,9 +134,8 @@ namespace Sweatometer.Service
         /// </summary>
         /// <param name="sourceWord">Word to search against.</param>
         /// <returns>Filtered list of synonyms.</returns>
-        private async Task<IEnumerable<string>> GetFilteredSynonymsOfWord(string sourceWord)
-        {
-            var synonyms = await wordFinderService.GetWordsToMeanLikeAsync(sourceWord);
+        private async Task<IEnumerable<string>> GetFilteredSynonymsOfWord(string sourceWord) {
+            var synonyms = await WordFinderService.GetWordsToMeanLikeAsync(sourceWord);
 
             return synonyms
                 .Where(s => s.Score > mergeOptions.Value.MinScoreForSynoymns)
@@ -163,14 +150,13 @@ namespace Sweatometer.Service
         /// </summary>
         /// <param name="sourceWord">Word to search against.</param>
         /// <returns>Filtered down list of options based of <code>mergeWordOptions</code></returns>
-        private async Task<IList<SimilarWord>> GetFilteredSimilarWordsFromWord(string sourceWord)
-        {
-            var injectWordSoundsLikeOptions = await wordFinderService.GetWordsThatSoundLikeAsync(sourceWord);
+        private async Task<IList<SimilarWord>> GetFilteredSimilarWordsFromWord(string sourceWord) {
+            var injectWordSoundsLikeOptions = await WordFinderService.GetWordsThatSoundLikeAsync(sourceWord);
             var filtedinjectWordSoundsLikeOptions = injectWordSoundsLikeOptions
                 .OrderByDescending(s => s.Score)
                 .Take(mergeOptions?.Value?.MaxWordsToSoundLike ?? injectWordSoundsLikeOptions.Count);
 
-            var injectWordSpellsLikeOptions = await wordFinderService.GetWordsToSpellLikeAsync(sourceWord);
+            var injectWordSpellsLikeOptions = await WordFinderService.GetWordsToSpellLikeAsync(sourceWord);
             var filteredinjectWordSpellsLikeOptions = injectWordSpellsLikeOptions
                 .OrderByDescending(s => s.Score)
                 .Take(mergeOptions?.Value?.MaxWordsToSpellLike ?? injectWordSoundsLikeOptions.Count);
@@ -184,14 +170,13 @@ namespace Sweatometer.Service
         /// </summary>
         /// <param name="sourceWord">Word to process.</param>
         /// <returns>Processed words with character replacements.</returns>
-        public static IEnumerable<string> FindCommonCharacterReplacements(string sourceWord)
-        {
+        public static IEnumerable<string> FindCommonCharacterReplacements(string sourceWord) {
             yield return RemoveDoubleLettersFromString(sourceWord);
 
             yield return sourceWord.Replace("ph", "f");
             yield return sourceWord.Replace("f", "ph");
 
-            yield return sourceWord[0..^1];
+            yield return sourceWord[0.. ^ 1];
         }
 
         /// <summary>
@@ -200,16 +185,13 @@ namespace Sweatometer.Service
         /// </summary>
         /// <param name="doubleLetterWord">Word to remove double letters (if any) from.</param>
         /// <returns>Processed word.</returns>
-        public static string RemoveDoubleLettersFromString(string doubleLetterWord)
-        {
+        public static string RemoveDoubleLettersFromString(string doubleLetterWord) {
             var characters = doubleLetterWord.ToCharArray();
             char lastChar = characters[0];
             string singleLetterWord = lastChar.ToString();
 
-            foreach (char letter in characters)
-            {
-                if (letter != lastChar)
-                {
+            foreach (char letter in characters) {
+                if (letter != lastChar) {
                     singleLetterWord += letter;
                     lastChar = letter;
                 }

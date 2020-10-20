@@ -1,7 +1,5 @@
-namespace Sweatometer
-{
-    public enum SynonymsOfInjectWord
-    {
+namespace Sweatometer {
+    public enum SynonymsOfInjectWord {
         INCLUDE,
         EXCLUDE
     }

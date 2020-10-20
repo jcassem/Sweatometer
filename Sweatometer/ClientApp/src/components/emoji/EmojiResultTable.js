@@ -4,12 +4,12 @@ export class EmojiResultTable extends Component {
 
     static searchWordName = "Search Word";
 
-    static emojiWordsToIgnore = ["of", "the", "a", "and", "in"];
+    static emojiWordsToIgnore = ["to","of", "the", "a", "and", "in"];
 
     constructor(state) {
         super(state);
         this.state = {
-            searchWord: 'shutter island',
+            searchWord: 'Lion King',
             loading: false,
             hasRun: false,
             statusCode: 200,

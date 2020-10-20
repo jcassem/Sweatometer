@@ -1,4 +1,3 @@
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.SpaServices.ReactDevelopmentServer;
@@ -6,7 +5,10 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Sweatometer.Data.Emoji;
-using Sweatometer.Service;
+using Sweatometer.Service.EmojiSearch;
+using Sweatometer.Service.Merge;
+using Sweatometer.Service.SweatTest;
+using Sweatometer.Service.Word;
 
 namespace Sweatometer
 {

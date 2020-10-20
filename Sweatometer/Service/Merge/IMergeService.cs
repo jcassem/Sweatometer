@@ -1,14 +1,12 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Sweatometer.Model;
 
-namespace Sweatometer.Service
-{
+namespace Sweatometer.Service.Merge {
     /// <summary>
     /// Provides services to test the sweat levels of a provided word combination/pun.
     /// </summary>
-    public interface IMergeService
-    {
+    public interface IMergeService {
         /// <summary>
         /// Generates a collection of variations of the <code>parentWord</code>
         /// with the <code>injectWord</code> (or a similar verison of it) inserted within it.
@@ -31,7 +29,7 @@ namespace Sweatometer.Service
         /// <param name="checkSynonymsOfParentWord">Include synonyms of parent word in merge search.</param>
         /// <returns>Collection of merged words.</returns>
         Task<ICollection<MergedWord>> MergeWords(
-            string parentWord, 
+            string parentWord,
             string injectWord,
             ResultSet returnOnFirstResult,
             SynonymsOfInjectWord checkSynonymsOfInjectWord,

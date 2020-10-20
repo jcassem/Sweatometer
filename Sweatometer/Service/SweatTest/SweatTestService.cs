@@ -1,48 +1,44 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Sweatometer.Model;
 using Sweatometer.Service;
+using Sweatometer.Service.Merge;
 
-namespace Sweatometer
-{
+namespace Sweatometer.Service.SweatTest {
     /// <inheritdoc/>
-    public class SweatTestService : ISweatTestService
-    {
+    public class SweatTestService : ISweatTestService {
         private readonly ILogger<SweatTestService> logger;
 
         private readonly IMergeService mergeService;
 
         public SweatTestService(
             ILogger<SweatTestService> logger,
-            IMergeService mergeService)
-        {
+            IMergeService mergeService) {
             this.logger = logger;
             this.mergeService = mergeService;
         }
 
         /// <inheritdoc/>
-        public async Task<SweatTestResult> SweatTest(string parentWord, string injectWord, string providedAnswer)
-        {
+        public async Task<SweatTestResult> SweatTest(string parentWord, string injectWord, string providedAnswer) {
             providedAnswer = providedAnswer.ToLower();
             SweatTestResult result = new SweatTestResult();
 
             var foundOptions = await mergeService.MergeWords(
-                parentWord, 
+                parentWord,
                 injectWord,
                 ResultSet.ALL_RESULTS,
                 SynonymsOfInjectWord.INCLUDE,
                 SynonymsOfParentWord.EXCLUDE
             );
-            
+
             NormaliseScores(foundOptions);
 
             result.Alternatives = foundOptions.Where(x => x.Word != providedAnswer).ToList();
             var foundAnswers = foundOptions.Where(x => x.Word == providedAnswer);
 
-            if(foundAnswers?.Count() > 0)
-            {
+            if (foundAnswers?.Count() > 0) {
                 result.Score = foundAnswers.First().Score;
                 result.Outcome = DetermineSweatLevels(foundOptions, foundAnswers.First());
             }
@@ -58,27 +54,21 @@ namespace Sweatometer
         /// <param name="options">All merge word options.</param>
         /// <param name="candidate">Proposed pun.</param>
         /// <returns>Sweat level string.</returns>
-        private string DetermineSweatLevels(ICollection<MergedWord> options, MergedWord candidate)
-        {
-            if (options.Contains(candidate))
-            {
+        private string DetermineSweatLevels(ICollection<MergedWord> options, MergedWord candidate) {
+            if (options.Contains(candidate)) {
                 var denominator = options.Select(x => x.Score).Max();
                 var ratio = denominator == 0 ? 0 : candidate.Score / denominator;
 
-                if(ratio >= 0.9)
-                {
+                if (ratio >= 0.9) {
                     return SweatTestResult.LOW_SWEAT;
                 }
-                else if (ratio >= 0.7)
-                {
+                else if (ratio >= 0.7) {
                     return SweatTestResult.AVERAGE_SWEAT;
                 }
-                else if (ratio >= 0.5)
-                {
+                else if (ratio >= 0.5) {
                     return SweatTestResult.PRETTY_SWEATY;
                 }
-                else
-                {
+                else {
                     return SweatTestResult.SUPER_SWEATY;
                 }
 
@@ -92,16 +82,12 @@ namespace Sweatometer
         /// the collection has more than on element in it and scores are already > 100.
         /// </summary>
         /// <param name="mergedWordsToNormalise">Collection of MergeWords to normalise scores for.</param>
-        private void NormaliseScores(ICollection<MergedWord> mergedWordsToNormalise)
-        {
-            if(mergedWordsToNormalise?.Count > 1)
-            {
+        private void NormaliseScores(ICollection<MergedWord> mergedWordsToNormalise) {
+            if (mergedWordsToNormalise?.Count > 1) {
                 var maxScore = mergedWordsToNormalise.Select(x => x.Score).Max();
 
-                if(maxScore > 100)
-                {
-                    foreach (var mergedWord in mergedWordsToNormalise)
-                    {
+                if (maxScore > 100) {
+                    foreach (var mergedWord in mergedWordsToNormalise) {
                         mergedWord.Score /= maxScore * 100;
                     }
                 }
