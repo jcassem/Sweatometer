@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using Sweatometer.Data.Emoji;
 using Sweatometer.Model;
 using Sweatometer.Service;
 
@@ -37,7 +38,7 @@ namespace Sweatometer
         public async Task<ICollection<Emoji>> FindEmojisThatMatch(string searchTerm)
         {
             var emojis = new List<Emoji>();
-            var keys = EmojiLoader.EmojiDictionary.Keys;
+            var keys = EmojiData.EmojiDictionary.Keys;
 
             await Task.Run(() => {
                 var matchedKeys = new List<string>();
@@ -46,9 +47,9 @@ namespace Sweatometer
 
                 // search related words if none found
                 if(!matchedKeys.Any()){
-                    var keyOptions = FindMatchesForSearchTermIn(searchTerm, EmojiLoader.RelatedWordsToEmojiDictionaryKeysDictionary.Keys);
+                    var keyOptions = FindMatchesForSearchTermIn(searchTerm, EmojiData.RelatedWordsToEmojiDictionaryKeysDictionary.Keys);
                     foreach(var key in keyOptions){
-                        var relatedWordsEmojiKeyOptions = EmojiLoader.RelatedWordsToEmojiDictionaryKeysDictionary[key];
+                        var relatedWordsEmojiKeyOptions = EmojiData.RelatedWordsToEmojiDictionaryKeysDictionary[key];
                         if(relatedWordsEmojiKeyOptions.Any()){
                             matchedKeys.AddRange(relatedWordsEmojiKeyOptions);
                         }
@@ -59,7 +60,7 @@ namespace Sweatometer
                 {
                     foreach (String key in matchedKeys)
                     {
-                        foreach(string emojiIcon in EmojiLoader.EmojiDictionary[key].ToList()){
+                        foreach(string emojiIcon in EmojiData.EmojiDictionary[key].ToList()){
                             var emojiToAdd = new Emoji(emojiIcon, key);
                             var existingEmoji = emojis.FirstOrDefault(x => x.Icon.Equals(emojiToAdd.Icon));
                             

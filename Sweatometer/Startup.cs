@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.SpaServices.ReactDevelopmentServer;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Sweatometer.Data.Emoji;
 using Sweatometer.Service;
 
 namespace Sweatometer
@@ -37,11 +38,16 @@ namespace Sweatometer
             services.AddScoped<IMergeService, MergeService>();
             services.AddScoped<ISweatTestService, SweatTestService>();
             services.AddScoped<IEmojiSearchService, EmojiSearchService>();
-            services.AddScoped<IEmojiLoader, EmojiLoader>();
+            services.AddScoped<IEmojiDataGenerator, EmojiDataGenerator>();
         }
 
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IEmojiLoader emojiLoader)
+        /// <summary>
+        /// This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
+        /// </summary>
+        /// <param name="app"></param>
+        /// <param name="env"></param>
+        /// <param name="emojiDataGenerator"></param>
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IEmojiDataGenerator emojiDataGenerator)
         {
             if (env.IsDevelopment())
             {
@@ -76,8 +82,9 @@ namespace Sweatometer
                 }
             });
 
-            emojiLoader.LoadEmojis();
-            // await emojiLoader.AddRelatedWordsToEmojiDictionary();
+            EmojiDataLoader.LoadEmojiDataFromFile();
+            // NB Inject a EmojiDataGenerator instance into this method to re-generate data here.
+            // emojiDataGenerator.CreateRelatedWordsDictionary();
         }
     }
 }
