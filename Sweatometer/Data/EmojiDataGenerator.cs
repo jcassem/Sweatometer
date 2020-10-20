@@ -43,9 +43,6 @@ namespace Sweatometer.Data.Emoji {
 
         ///<inheritdoc />
         public async Task GenerateRelatedWordsDictionaryFile() {
-            Console.WriteLine("Min synonym score: " + emojiRelatedWordOptions?.Value?.MinScoreForSynoymns);
-            Console.WriteLine("Min related word score: " + emojiRelatedWordOptions?.Value?.MinScoreForRelatedWords);
-            
             Console.WriteLine("Geneating word dictionary.");
             await GenerateRelatedWordsDictionary();
 
@@ -156,7 +153,6 @@ namespace Sweatometer.Data.Emoji {
         /// <param name="filePath">File path to save against.</param>
         private void PersistRelatedWordDictionaryToJsonFile(string filePath) {
             string json = JsonConvert.SerializeObject(EmojiData.RelatedWordsDictionary, Formatting.Indented);
-            Console.WriteLine("Saving json (of length " + json.Length + ") to: " + filePath);
             File.WriteAllText(filePath, json);
             Console.WriteLine("Saved");
         }

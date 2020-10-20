@@ -52,3 +52,16 @@ docker run -it -p 8080:80 sweatometer:latest
 * Add more unit tests
 * Improve merge function (accuracy and efficiency)
 * Make use of DataMuse filter options (could help with the above)
+
+
+## Generate data
+
+### Emoji related words
+
+To generate related words to the emoji descriptions please do the following:
+1. Delete the existing `/Data/Resources/emojiRelatedWords.json`
+2. Un-comment the call in `Startup.cs`
+3. Run the code (it will take about 10 mins to generate the new json)
+4. Copy over the newly generated file fron `/bin` to the `/Data/Resources/` directory in this project
+5. Comment out the call in `Startup.cs`
+6. Re-run the code to check everything works correctly
