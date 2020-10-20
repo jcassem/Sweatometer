@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using Newtonsoft.Json;
 using Sweatometer.Model;
 
@@ -81,7 +82,7 @@ namespace Sweatometer.Data.Emoji {
         /// </summary>
         private static void GenerateRelatedWordsToEmojiDictionaryKeysDictionary() {
             if(EmojiData.RelatedWordsToEmojiDictionaryKeysDictionary == null){
-                var relatedWordReverseLookup = new Dictionary<string, List<string>>();
+                var relatedWordReverseLookup = new Dictionary<string, List<SimilarWord>>();
 
                 foreach(var relatedWordKey in EmojiData.RelatedWordsDictionary.Keys){
                     var relatedWords = EmojiData.RelatedWordsDictionary[relatedWordKey];
@@ -90,18 +91,23 @@ namespace Sweatometer.Data.Emoji {
                         var reverseWordValue = relatedWordKey;
 
                         if(relatedWordReverseLookup.ContainsKey(reverseWordKey)){
-                            // replace it if the Score is larger
                             var existingRelatedWords = relatedWordReverseLookup[reverseWordKey];
+
                             if(existingRelatedWords == null){
-                                existingRelatedWords = new List<string>();
+                                existingRelatedWords = new List<SimilarWord>();
                             }
-                            if(!existingRelatedWords.Contains(reverseWordValue)){
-                                existingRelatedWords.Add(reverseWordValue);
-                                relatedWordReverseLookup[reverseWordKey] = existingRelatedWords;
+                            
+                            if(!existingRelatedWords.Any(x => x.Word.Equals(reverseWordValue))){
+                                existingRelatedWords.Add(new SimilarWord(reverseWordValue, relatedWord.Score));
+
+                                relatedWordReverseLookup[reverseWordKey] = existingRelatedWords
+                                        .OrderByDescending(x => x.Score)
+                                        .ToList();
                             }
                         }
                         else {
-                            relatedWordReverseLookup.TryAdd(reverseWordKey, new List<string>{reverseWordValue});
+                            var wordToAdd = new SimilarWord(reverseWordValue, relatedWord.Score);
+                            relatedWordReverseLookup.TryAdd(reverseWordKey, new List<SimilarWord>{wordToAdd});
                         }
                     }
                 }

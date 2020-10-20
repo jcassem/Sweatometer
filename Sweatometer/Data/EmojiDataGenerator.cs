@@ -86,6 +86,7 @@ namespace Sweatometer.Data.Emoji {
 
         /// <summary>
         /// Finds synonyms for <param name="searchTerm"/> limiting the results based on the criteria set in config.
+        /// All scores are normalised against the minimum accepted score.
         /// </summary>
         /// <param name="searchTerm">Term to search for.</param>
         /// <returns>Top results related to search term.</returns>
@@ -109,6 +110,7 @@ namespace Sweatometer.Data.Emoji {
 
         /// <summary>
         /// Finds related words for <param name="searchTerm"/> limiting the results based on the criteria set in config.
+        /// All scores are normalised against the minimum accepted score.
         /// </summary>
         /// <param name="searchTerm">Term to search for.</param>
         /// <returns>Top results related to search term.</returns>

@@ -44,18 +44,18 @@ namespace Sweatometer
                 var matchedKeys = new List<string>();
                 matchedKeys.AddRange(FindMatchesForSearchTermIn(searchTerm, keys));
 
-
                 // search related words if none found
                 if(!matchedKeys.Any()){
                     var keyOptions = FindMatchesForSearchTermIn(searchTerm, EmojiData.RelatedWordsToEmojiDictionaryKeysDictionary.Keys);
                     foreach(var key in keyOptions){
                         var relatedWordsEmojiKeyOptions = EmojiData.RelatedWordsToEmojiDictionaryKeysDictionary[key];
                         if(relatedWordsEmojiKeyOptions.Any()){
-                            matchedKeys.AddRange(relatedWordsEmojiKeyOptions);
+                            matchedKeys.AddRange(relatedWordsEmojiKeyOptions.Select(x => x.Word));
                         }
                     }
                 }
                 
+                // Add matched emojis
                 if (matchedKeys.Any())
                 {
                     foreach (String key in matchedKeys)
